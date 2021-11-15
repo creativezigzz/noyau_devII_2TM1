@@ -1,3 +1,8 @@
+# EPHECOM 2TM1
+
+Repository dédié au projet implémenté par la classe 2TM1
+
+
 # Présentation
 
 Projet EpheCom
@@ -70,6 +75,8 @@ Vous devrez maîtriser et utiliser les outils listés ci-dessous afin de vous or
 
 ### L'utilisateur doit pouvoir communiquer par écrit avec une ou plusieurs personnes.
 
+Module attribué au groupe 2TM1-3 (Repo Github : https://github.com/LouisLombaert/projet_python)
+
     - Possibilité de discuter avec un seul membre (conversation privée)
     - Possibilité de créer une groupe de discussion.
     - Le créateur peut ajouter/supprimer des participants.
@@ -91,6 +98,8 @@ Vous devrez maîtriser et utiliser les outils listés ci-dessous afin de vous or
 
 
 ## Gestionnaire d'utilisateurs
+
+Module attribué au groupe 2TM1-1 (Repo Github : https://github.com/Rachiid94/Projet_Dev2)
     - Inscription
     - Connexion
     - Gestion de rôles utilisateurs lié au logiciel (Administrateur | utilisateur | visiteur).
@@ -100,11 +109,17 @@ Vous devrez maîtriser et utiliser les outils listés ci-dessous afin de vous or
 
 
 ## Bot permettant l'accès à diverses nouvelles (Météo, news, etc.)
+
+Module attribué au groupe 2TM1-4 (Repo Github : https://github.com/severinRobert/Module_DevII)
+
     - Messages automatisés pour un channel grâce à des commandes spécifiques.
     - Automatiser les informations en liant le bot à des news qui sont régulièrement affichées dans les groupes concernés.
 
 
 ## Bot aidant dans la gestion de EpheCom
+
+Module attribué au groupe 2TM1-2 (Repo Github : https://github.com/JarodEphec/ChatBot_interactions)
+
     - Statut du réseau
     - Statistiques sur différents critères comme : Nombre d'utilisateurs, de groupes etc.
     - Graphiques représentant l'évolution des inscriptions, quantités d'inscrits, quantité de messages envoyés, etc.
