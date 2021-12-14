@@ -6,32 +6,81 @@
     ----- CODE DE LA CLASSE A IMPLEMENTER -----
 """
 
+import mongo_connector
+
+class ParamNotFoundException(Exception):
+    pass
 
 class Channel:
-    def __init__(self, identifier, name, group, icon_path=None, participants=None):
-        self.identifier = identifier
-        self.name = name
-        self.group = group
-        self.icon_path = icon_path
-        self.participants = participants
+    """class to create a new channel, it can add and remove members to this channel"""
 
-    def join(self):
+    def __init__(self, channel_name, channel_admin, channel_members=None, chat_history=None):
+        """create a new channel based on a name, an administrator, some members and a chat history"""
         """
-            Méthode permettant à un utilisateur de rejoindre ce channel.
+        PRE : channel_name and channel_admin are strings, channel_members and chat_history are lists of strings
+        POST : a new Channel object is created
         """
-        pass
+        if channel_members is None:
+            channel_members = []
+        if chat_history is None:
+            chat_history = []
+        self.channel_name = channel_name
+        self.channel_admin = channel_admin
+        channel_members.append(self.channel_admin)
+        self.channel_members = channel_members  # pour moi channel_members serait une
+        # liste de string (comme ça on peut ajouter et supprimer des membres facilement
+        self.chat_history = chat_history  # même chose que pour channel_members
+        try:
+            with mongo_connector.MongoConnector() as connector:
+                self.__collection = connector.db["chat"]
 
-    def leave(self):
+        except Exception as error:
+            print(error)
+
+    def send_to_db(self):
+        """send the channel to the database"""
         """
-            Méthode permettant à un utilisateur de quitter ce channel.
+        PRE : 
+        POST : the channel is sent to the database
         """
-        pass
+        query = {
+            "channel_name": self.channel_name,
+            "channel_admin": self.channel_admin,
+            "channel_members": self.channel_members,
+            "chat_history": self.chat_history
+        }
+        self.__collection.insert_one(query)
 
-    def get_participants_status(self):
-        pass
+    def add_member(self, member):
+        """add a new member to the channel"""
+        """
+        PRE : member is a string
+        POST : member is added to the list of members of the channel
+        """
+        self.channel_members.append(member)
+        query = {"channel_name": self.channel_name}
+        new_member = {"$set": {
+            "channel_members": self.channel_members
+        }}
+        self.__collection.update_one(query, new_member)
 
-    def get_message_history(self):
-        pass
+    def remove_member(self, member):
+        """remove a member from the channel, it remove all the members that have the pseudo member"""
+        """
+        PRE : member is a string that is in the list channel_members
+        POST : all the element 'member' of the list channel_members are removed
+        RAISE : paramNotFoundException if member is not in channel_members
+        """
+        if member not in self.channel_members:
+            raise ParamNotFoundException(Exception)
+        self.channel_members = [i for i in self.channel_members if i != member]  # permet de supprimer chaque élément
+        # member de la liste (même si il revient plsrs fois), remove ne supprime que la premiere occurrence
+        query = {"channel_name": self.channel_name}
+        member_to_remove = {"$set": {
+            "channel_members": self.channel_members
+        }}
+        self.__collection.update_one(query, member_to_remove)
 
-    def send_message(self):
+    def mute_group(self):
         pass
+    # delete_channel dans catégories ou dans channel ?
