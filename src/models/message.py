@@ -11,16 +11,19 @@ from src.config import config
 
 
 class Message:
-    def __init__(self, timestamp, msg, sender):
+    def __init__(self, timestamp, msg, sender, id_channel):
         self.timestamp = timestamp
         self.msg = msg
         self.sender = sender
+        self.id_channel = id_channel
+
 
     def db_formatting(self):
         return {
             "timestamp": str(self.timestamp),
             "msg": self.msg,
-            "sender": self.sender
+            "sender": self.sender,
+            "id_channel":self.id_channel
         }
 
     def send_to_db(self):
