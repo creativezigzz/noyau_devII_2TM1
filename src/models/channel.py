@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import uuid
 """
     Ce fichier contient une classe représentant un channel.
     ----- CODE DE LA CLASSE A IMPLEMENTER -----
 """
 
-import mongo_connector
+from src.models.mongo_connector import MongoConnector
 
 class ParamNotFoundException(Exception):
     pass
@@ -14,7 +15,7 @@ class ParamNotFoundException(Exception):
 class Channel:
     """class to create a new channel, it can add and remove members to this channel"""
 
-    def __init__(self, channel_name, channel_admin, channel_members=None, chat_history=None):
+    def __init__(self, channel_name, channel_admin, group, channel_members=None, chat_history=None):
         """create a new channel based on a name, an administrator, some members and a chat history"""
         """
         PRE : channel_name and channel_admin are strings, channel_members and chat_history are lists of strings
@@ -24,6 +25,7 @@ class Channel:
             channel_members = []
         if chat_history is None:
             chat_history = []
+        self.id = uuid.uuid4()  # génere un id aléatoire (et unique)
         self.channel_name = channel_name
         self.channel_admin = channel_admin
         channel_members.append(self.channel_admin)
