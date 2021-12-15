@@ -48,8 +48,8 @@ class TeamsContainer(ScrollView):
                     {"pseudo": "Jacques"},
                 ],
                 "channels": [
-                    Channel("abc1okDa", "My Channel 1", Group("akjIuY89", "Général")),
-                    Channel("1Oo0abdh", "My Channel 2", Group("akJhdgGa", "Profs"))
+                    Channel("My_Channel_1", "Jacques", Group("General"), ["Bilou"]),
+                    Channel("My_Channel_2", "Babar", Group("blabla"), ["SerialMatcher"])
                 ]
             },
             "0iIaJbL4": {
@@ -62,8 +62,8 @@ class TeamsContainer(ScrollView):
                     {"pseudo": "Jacques"},
                 ],
                 "channels": [
-                    Channel("abc1okDb", "My Channel 1", Group("akkIuY89", "Général")),
-                    Channel("1Oo0abdb", "My Channel 2", Group("akaIuY89", "Général"))
+                    Channel("My_Channel_3", "Bilou", Group("general")),  # modif ici
+                    Channel("My_Channel_4", "Jacques", Group("prof"), ["Bilou"])
                 ]
             },
             "jdhTucB1": {
@@ -76,8 +76,8 @@ class TeamsContainer(ScrollView):
                     {"pseudo": "Jacques"},
                 ],
                 "channels": [
-                    Channel("abc1okDb", "My Channel 1", Group("akjvuY89", "Général")),
-                    Channel("1Oo0abdb", "My Channel 2", Group("akjIuv89", "Blabla"))
+                    Channel("My_Channel_5", "Jacques", Group("coucou"), ["SerialMatcher"]),
+                    Channel("My_Channel_6", "Babar", Group("General"))
                 ]
             }
         }
