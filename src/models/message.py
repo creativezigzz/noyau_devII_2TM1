@@ -9,16 +9,20 @@ import json
 
 from src.config import config
 from src.models.mongo_connector import MongoConnector
+import uuid
 
+
+# pour l'auto increment
 
 class Message:
-    def __init__(self, msg_id, timestamp, msg, sender, channel_id, is_edited=False):
+
+    def __init__(self, timestamp, msg, sender, channel_id, is_edited=False):
         self.timestamp = timestamp
         self.msg = msg
         self.sender = sender
-        self.channel_id = channel_id
         self.is_edited = is_edited
-        self.msg_id = msg_id
+        self._id = uuid.uuid4()
+        self.channel_id = channel_id
 
         try:
             with MongoConnector() as connector:
@@ -28,12 +32,12 @@ class Message:
 
     def db_formatting(self):
         return {
+            "_id": self._id,
             "timestamp": str(self.timestamp),
             "msg": self.msg,
             "sender": self.sender,
-            "channel_id": self.channel_id,
             "is_edited": self.is_edited,
-            "msg_id": self.msg_id
+            "channel_id": self.channel_id
         }
 
     def send_to_db(self):
@@ -53,4 +57,3 @@ class Message:
 
     def delete_db(self):
         self.__collection.delete_one(self.msg_id)
-

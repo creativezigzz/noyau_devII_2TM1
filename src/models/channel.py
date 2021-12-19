@@ -34,7 +34,7 @@ class Channel:
         # liste de string (comme ça on peut ajouter et supprimer des membres facilement
         self.chat_history = chat_history  # même chose que pour channel_members
         try:
-            with mongo_connector.MongoConnector() as connector:
+            with MongoConnector() as connector:
                 self.__collection = connector.db["chat"]
 
         except Exception as error:

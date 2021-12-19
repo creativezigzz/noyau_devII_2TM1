@@ -18,7 +18,6 @@ from src.config import config
 from src.libs.bot.commands import Commands
 from src.models.message import Message
 
-
 Builder.load_file("{0}/conversation.kv".format(config.VIEWS_DIR))
 
 
@@ -84,7 +83,8 @@ class Conversation(RelativeLayout):
         txt = self.inputs_container.ids.message_input.text
 
         if txt:
-            msg = Message(datetime.now(), txt, "Moi")
+            msg = Message(datetime.now(), txt, "Moi", self.messages_container.channel_id)
+            print(self.messages_container.channel_id)
             self.messages_container.add_message(msg)
             msg.send_to_db()
 
@@ -95,4 +95,3 @@ class Conversation(RelativeLayout):
                 self.messages_container.add_message(msg_res, pos="right")
 
             self.inputs_container.ids.message_input.text = ""
-
