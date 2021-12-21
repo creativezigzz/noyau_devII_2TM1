@@ -43,7 +43,7 @@ class LandingScreen(Screen):
         """
         self.sm.redirect(href)
 
-    def display_channels(self, team_channels: list):
+    def display_channels(self, team_channels: list, team_name: str):
         """
             [Base]
             Permet la mise à jour de la liste des "Channel" après un clic sur le nom d'une "Team".
@@ -52,7 +52,7 @@ class LandingScreen(Screen):
         self.conv_box.clear_widgets()
         self.participant_box.clear_widgets()
         self.rooms_box.clear_widgets()
-        self.rooms_box.add_widget(ChannelsContainer(team_channels))
+        self.rooms_box.add_widget(ChannelsContainer(team_channels, team_name))
 
     def display_conversation(self, channel_id: str):
         """
@@ -74,7 +74,7 @@ class LandingScreen(Screen):
 
         # participant = ChannelsContainer(channel_id).get_participant()
         # print(participant.channel_members)
-        # self.participant_box.add_widget(participant.channel_members)
+        # self.participant_box.add_widget(participant.channel_members)gg
 
     def set_teams_list(self):
         """

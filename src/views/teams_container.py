@@ -38,50 +38,6 @@ class TeamsContainer(ScrollView):
         self.sm = ScreensManager()
         self.data_from_db = {}
         self.set_data_from_db()
-        self.data_from_db2 = {
-            "xG7ab7d0": {
-                "name": "Pis",
-                "icon_path": "",
-                "participants": [
-                    {"pseudo": "SerialMatcher"},
-                    {"pseudo": "Bilou"},
-                    {"pseudo": "Babar"},
-                    {"pseudo": "Jacques"},
-                ],
-                "channels": [
-                    # Channel("My_Channel_1", "Jacques", Group("General"), ["Bilou"]),
-                    # Channel("My_Channel_2", "Babar", Group("blabla"), ["SerialMatcher"])
-                ]
-            },
-            "0iIaJbL4": {
-                "name": "Pan",
-                "icon_path": "",
-                "participants": [
-                    {"pseudo": "SerialMatcher"},
-                    {"pseudo": "Bilou"},
-                    {"pseudo": "Babar"},
-                    {"pseudo": "Jacques"},
-                ],
-                "channels": [
-                    # Channel("My_Channel_3", "Bilou", Group("general")),  # modif ici
-                    # Channel("My_Channel_4", "Jacques", Group("prof"), ["Bilou"])
-                ]
-            },
-            "jdhTucB1": {
-                "name": "Douille",
-                "icon_path": "",
-                "participants": [
-                    {"pseudo": "SerialMatcher"},
-                    {"pseudo": "Bilou"},
-                    {"pseudo": "Babar"},
-                    {"pseudo": "Jacques"},
-                ],
-                "channels": [
-                    # Channel("My_Channel_5", "Jacques", Group("coucou"), ["SerialMatcher"]),
-                    # Channel("My_Channel_6", "Babar", Group("General"))
-                ]
-            }
-        }
         # print(self.data_from_db2)
 
         self.init_teams_list()
@@ -91,8 +47,8 @@ class TeamsContainer(ScrollView):
             with MongoConnector() as connector:
                 collection = connector.db["teams"]
                 for document in collection.find():
-                    #print(document["data"]["name"])
-                    #print(document["_id"])
+                    # print(document["data"]["name"])
+                    # print(document["_id"])
                     self.data_from_db[document["_id"]] = {
 
                         "name": document["data"]["name"],
@@ -102,7 +58,7 @@ class TeamsContainer(ScrollView):
                     }
 
                     for channel in document["data"]["channels"]:
-                        print("test ajout des channel")
+                        # print("test ajout des channel")
                         data = Channel(
                             channel_name=channel["name"],
                             channel_admin=channel["admin"],
@@ -113,12 +69,11 @@ class TeamsContainer(ScrollView):
 
                         self.data_from_db[document["_id"]]["channels"].append(data)
 
-                    #print(self.data_from_db)
+                    #return self.data_from_db
 
 
         except Exception as e:
             print(e)
-        print(self.data_from_db)
 
     def init_teams_list(self):
 
@@ -138,9 +93,12 @@ class TeamsContainer(ScrollView):
 
         if teams_list:
             for team in teams_list:
+                print(team)
+                print(team.name)
+                print(team.channels)
                 channel_label = TeamsListButton(text=team.name)
                 channel_label.bind(
-                    on_press=lambda a, _channels=team.channels: landing_screen.display_channels(_channels))
+                    on_press=lambda a, _channels=team.channels,_name=team.name: landing_screen.display_channels(_channels, _name))
                 self.content.add_widget(channel_label)
         else:
             self.content.add_widget(EmptyTeams())

@@ -15,6 +15,8 @@ from kivy.uix.screenmanager import ScreenManagerException
 from kivy.uix.scrollview import ScrollView
 
 from src.config import config
+from src.models.channel import Channel
+from src.models.group import Group
 from src.models.mongo_connector import MongoConnector
 from src.models.screens_manager import ScreensManager
 
@@ -38,13 +40,13 @@ class ChannelsListButton(Button):
 
 
 class ChannelsContainer(ScrollView):
-    def __init__(self, channels_list):
+    def __init__(self, channels_list: list, team_name: str):
         super(ChannelsContainer, self).__init__()
         self.channels_list = channels_list
+        self.team_name = team_name
         self.channels_container = self.ids.channels_content
         self.sm = ScreensManager()
         self.landing_screen = self.get_landing_screen()
-
         self.generate_list_rows()
 
     def get_landing_screen(self):
@@ -76,6 +78,7 @@ class ChannelsContainer(ScrollView):
                                                   # and self.landing_screen.display_participant_channel(_id)
                                                   )
             groups[group_name].add_widget(channel_name_row)
+        print(group)
 
     def add_new_channel(self, group_name):
         """
@@ -99,7 +102,34 @@ class ChannelsContainer(ScrollView):
 
         cancel.bind(on_press=lambda a: popup.dismiss())
 
+        channel_created = Channel(
+            channel_name="test",
+            channel_admin="test""test",
+            group=Group(name="test"),
+            channel_members=[{"pseudo": "test"}, {"pseudo": "test"}],
+            chat_history=None
+        )
+        self.add_new_channel_on_db(channel_created, self.team_name)
         popup.open()
+
+    def add_new_channel_on_db(self, channel: Channel, team_name):
+        try:
+            landing_screen = self.sm.get_screen("landing")
+        except ScreenManagerException:
+            pass
+        try:
+            with MongoConnector() as connector:
+                print("passé dans add_new_channel")
+                collection = connector.db["teams"]
+                # ajout dans la db
+                for document in collection:
+                    if document["data"]["name"] == team_name:
+                        team = document["data"]["channels"]
+                        team.append(channel)
+                # actualisation de la liste des channel
+                landing_screen.display_channels(self.channels_list)
+        except Exception as e:
+            print(e)
 
 
 class ParticipantContainer(ScrollView):
