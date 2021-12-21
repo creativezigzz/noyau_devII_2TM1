@@ -15,8 +15,8 @@ from kivy.uix.screenmanager import ScreenManagerException
 from kivy.uix.scrollview import ScrollView
 
 from src.config import config
+from src.models.mongo_connector import MongoConnector
 from src.models.screens_manager import ScreensManager
-
 
 Builder.load_file("{0}/channel.kv".format(config.VIEWS_DIR))
 
@@ -68,12 +68,13 @@ class ChannelsContainer(ScrollView):
                 title_row.add_widget(title_add_btn)
                 group.add_widget(title_row)
                 self.channels_container.add_widget(group)
-
                 groups[channel.group.name] = group
 
             channel_name_row = ChannelsListButton(text=channel.channel_name,
                                                   on_press=lambda a, _id=channel.id:
-                                                  self.landing_screen.display_conversation(_id))
+                                                  self.landing_screen.display_conversation(_id)
+                                                  # and self.landing_screen.display_participant_channel(_id)
+                                                  )
             groups[group_name].add_widget(channel_name_row)
 
     def add_new_channel(self, group_name):
@@ -86,7 +87,8 @@ class ChannelsContainer(ScrollView):
         content.add_widget(Label(text="Le nom du nouveau channel et d'autres éléments"))
         content.add_widget(
             Button(text="Ajouter", size_hint=(None, None), size=(150, 40), pos_hint={'center_x': .4, 'center_y': .1}))
-        cancel = Button(text="Annuler", size_hint=(None, None), size=(150, 40), pos_hint={'center_x': .6, 'center_y': .1})
+        cancel = Button(text="Annuler", size_hint=(None, None), size=(150, 40),
+                        pos_hint={'center_x': .6, 'center_y': .1})
         content.add_widget(cancel)
 
         popup = Popup(title="Ajouter un nouveau channel à {0}".format(group_name),
@@ -98,3 +100,28 @@ class ChannelsContainer(ScrollView):
         cancel.bind(on_press=lambda a: popup.dismiss())
 
         popup.open()
+
+
+class ParticipantContainer(ScrollView):
+    def __int__(self, channel_id):
+        super(ParticipantContainer, self).__init__()
+        self.id_channel = channel_id
+        self.get_collection(self)
+
+    def set_collection_team(self):
+        pass
+
+    def get_collection(self):
+        try:
+            with MongoConnector() as connector:
+                print("passé dans get_collection")
+                collection = connector.db["teams"]
+                for document in collection:
+                    pass
+        except Exception as e:
+            print(e)
+
+    def get_participant(self):
+        print("dans get_paticipant")
+        participant_list = []
+        return participant_list

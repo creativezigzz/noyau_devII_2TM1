@@ -15,9 +15,9 @@ from src.config import config
 from src.libs.sorting.dict_sort import dict_sort
 from src.models.channel import Channel
 from src.models.group import Group
+from src.models.mongo_connector import MongoConnector
 from src.models.screens_manager import ScreensManager
 from src.models.team import Team
-
 
 Builder.load_file("{0}/teams.kv".format(config.VIEWS_DIR))
 
@@ -36,8 +36,9 @@ class TeamsContainer(ScrollView):
         super(TeamsContainer, self).__init__()
         self.content = self.ids.channels_content
         self.sm = ScreensManager()
-
-        self.data_from_db = {
+        self.data_from_db = {}
+        self.set_data_from_db()
+        self.data_from_db2 = {
             "xG7ab7d0": {
                 "name": "Pis",
                 "icon_path": "",
@@ -48,8 +49,8 @@ class TeamsContainer(ScrollView):
                     {"pseudo": "Jacques"},
                 ],
                 "channels": [
-                    Channel("My_Channel_1", "Jacques", Group("General"), ["Bilou"]),
-                    Channel("My_Channel_2", "Babar", Group("blabla"), ["SerialMatcher"])
+                    # Channel("My_Channel_1", "Jacques", Group("General"), ["Bilou"]),
+                    # Channel("My_Channel_2", "Babar", Group("blabla"), ["SerialMatcher"])
                 ]
             },
             "0iIaJbL4": {
@@ -62,8 +63,8 @@ class TeamsContainer(ScrollView):
                     {"pseudo": "Jacques"},
                 ],
                 "channels": [
-                    Channel("My_Channel_3", "Bilou", Group("general")),  # modif ici
-                    Channel("My_Channel_4", "Jacques", Group("prof"), ["Bilou"])
+                    # Channel("My_Channel_3", "Bilou", Group("general")),  # modif ici
+                    # Channel("My_Channel_4", "Jacques", Group("prof"), ["Bilou"])
                 ]
             },
             "jdhTucB1": {
@@ -76,15 +77,51 @@ class TeamsContainer(ScrollView):
                     {"pseudo": "Jacques"},
                 ],
                 "channels": [
-                    Channel("My_Channel_5", "Jacques", Group("coucou"), ["SerialMatcher"]),
-                    Channel("My_Channel_6", "Babar", Group("General"))
+                    # Channel("My_Channel_5", "Jacques", Group("coucou"), ["SerialMatcher"]),
+                    # Channel("My_Channel_6", "Babar", Group("General"))
                 ]
             }
         }
+        # print(self.data_from_db2)
 
         self.init_teams_list()
 
+    def set_data_from_db(self):
+        try:
+            with MongoConnector() as connector:
+                collection = connector.db["teams"]
+                for document in collection.find():
+                    #print(document["data"]["name"])
+                    #print(document["_id"])
+                    self.data_from_db[document["_id"]] = {
+
+                        "name": document["data"]["name"],
+                        "icon_path": "",
+                        "participants": document["data"]["participants"],
+                        "channels": []
+                    }
+
+                    for channel in document["data"]["channels"]:
+                        print("test ajout des channel")
+                        data = Channel(
+                            channel_name=channel["name"],
+                            channel_admin=channel["admin"],
+                            group=Group(name=channel["group"]),
+                            channel_members=channel["membres"],
+                            chat_history=None
+                        )
+
+                        self.data_from_db[document["_id"]]["channels"].append(data)
+
+                    #print(self.data_from_db)
+
+
+        except Exception as e:
+            print(e)
+        print(self.data_from_db)
+
     def init_teams_list(self):
+
         """
             [BASE]
             Initialise la liste des "Team" auxquelles l'utilisateur est inscrit.
@@ -92,10 +129,8 @@ class TeamsContainer(ScrollView):
             Sinon, un message s'affiche précisant que l'utilisateur ne fait partie d'aucun channel.
         """
         self.content.clear_widgets()
-
         teams_list = self.get_teams_list()
         landing_screen = None
-
         try:
             landing_screen = self.sm.get_screen("landing")
         except ScreenManagerException:
