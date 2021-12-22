@@ -13,6 +13,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import ScreenManagerException
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.textinput import TextInput
 
 from src.config import config
 from src.models.channel import Channel
@@ -89,20 +90,25 @@ class ChannelsContainer(ScrollView):
         self.landing_screen.display_participant_channel(membres, channel, team)
         self.landing_screen.display_conversation(id_channel)
 
-    def add_new_channel(self, group_name):
+        def add_new_channel(self, group_name):
         """
         Cette méthode permet d'ajouter un nouveau channel dans le groupe concerné.
         :param group_name: Représente le nom du groupe concerné.
         """
         content = RelativeLayout()
-
+        # comment faire ?
         content.add_widget(Label(text="Le nom du nouveau channel et d'autres éléments"))
-        content.add_widget(
-            Button(text="Ajouter", size_hint=(None, None), size=(150, 40), pos_hint={'center_x': .4, 'center_y': .1}))
+        self.channel = TextInput(text='', font_size=14, size_hint_y=None, height=50,
+                                 pos_hint={'center_x': .5, 'center_y': .3})
+        content.add_widget(self.channel)
+        # content.add_widget(
+        # Button(text="Ajouter", size_hint=(None, None), size=(150, 40), pos_hint={'center_x': .4, 'center_y': .1}))
         cancel = Button(text="Annuler", size_hint=(None, None), size=(150, 40),
                         pos_hint={'center_x': .6, 'center_y': .1})
         content.add_widget(cancel)
-
+        Ajouter = Button(text="Ajouter", size_hint=(None, None), size=(150, 40),
+                         pos_hint={'center_x': .4, 'center_y': .1})
+        content.add_widget(Ajouter)
         popup = Popup(title="Ajouter un nouveau channel à {0}".format(group_name),
                       size_hint=(.5, .5),
                       pos_hint={'center_x': .5, 'center_y': .5},
@@ -110,18 +116,19 @@ class ChannelsContainer(ScrollView):
                       auto_dismiss=False)
 
         cancel.bind(on_press=lambda a: popup.dismiss())
-
-        channel_created = Channel(
-            channel_name="test",
-            channel_admin="test""test",
-            group=Group(name="test"),
-            channel_members=[{"pseudo": "test"}, {"pseudo": "test"}],
+        team = self.team_name
+        Ajouter.bind(on_press=lambda a: self.add_new_channel_on_db(Channel(
+            channel_name=self.channel.text,
+            channel_admin="Moi_test",
+            group=Group(name=group_name),
+            channel_members=[],
             chat_history=None
-        )
-        self.add_new_channel_on_db(channel_created, self.team_name)
+        ), team))
+        # self.add_new_channel_on_db(channel_created, self.team_name)
         popup.open()
 
     def add_new_channel_on_db(self, channel: Channel, team_name):
+        global landing_screen
         try:
             landing_screen = self.sm.get_screen("landing")
         except ScreenManagerException:
@@ -129,14 +136,26 @@ class ChannelsContainer(ScrollView):
         try:
             with MongoConnector() as connector:
                 print("passé dans add_new_channel")
-                collection = connector.db["teams"]
+                collection = connector.db["teams"].find()
                 # ajout dans la db
                 for document in collection:
-                    if document["data"]["name"] == team_name:
-                        team = document["data"]["channels"]
-                        team.append(channel)
-                        self.channels_list.append(channel)
-                # actualisation de la liste des channel
+                    print("ok1")
+                    data_document = document["data"]
+                    if data_document["name"] == team_name:
+                        print("ok")
+                        team = data_document["channels"]
+                        channel_in_db_format = {"_id": channel.id, "channel_name": channel.channel_name,
+                                                "channel_admin": channel.channel_admin, "Group": channel.group.name,
+                                                "channel_members": channel.channel_members,
+                                                "chat_history": channel.chat_history}
+                        team.append(channel_in_db_format)  # ok jusque ici
+                        print(team)
+                        print(team_name)
+                        connector.db["teams"].update({"data": {"name": team_name}},
+                                                     {"$push": {"data": {"channels": channel_in_db_format}}})
+                        # marche pas pour l'instant, je penses que c'est parce que les channels ne se trouve directement
+                        # dans la collection mais dans le champ 'data'
+
                 landing_screen.display_channels(self.channels_list)
         except Exception as e:
             print(e)
