@@ -28,7 +28,7 @@ class Channel:
         """
         if chat_history is None:
             chat_history = []
-        self.id = uuid.uuid4()  # génère un id aléatoire (et unique)
+        # self.id = uuid.uuid4()  # génère un id aléatoire (et unique)
         self.channel_id = channel_id
         self.channel_name = channel_name
         self.channel_admin = channel_admin

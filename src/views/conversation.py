@@ -59,6 +59,7 @@ class ConversationContainer(ScrollView):
                 for document in collection:
                     print(channel_id)
                     if document['channel_id'] == channel_id:
+                        print("ici")
                         msg = MessageSent(text=document["timestamp"] + " - " + document["sender"] + "\n" + document["msg"])
                         self.messages_box.add_widget(msg, len(self.messages_box.children))
         except Exception as e:

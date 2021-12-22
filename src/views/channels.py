@@ -76,7 +76,6 @@ class ChannelsContainer(ScrollView):
                 group.add_widget(title_row)
                 self.channels_container.add_widget(group)
                 groups[channel.group.name] = group
-
             channel_name_row = ChannelsListButton(text=channel.channel_name,
                                                   on_press=lambda a, _membres=channel.channel_members, _id=channel.channel_id,
                                                                   _channel=channel:
