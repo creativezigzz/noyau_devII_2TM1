@@ -60,6 +60,7 @@ class TeamsContainer(ScrollView):
                     for channel in document["data"]["channels"]:
                         # print("test ajout des channel")
                         data = Channel(
+                            channel_id=channel["id"],
                             channel_name=channel["name"],
                             channel_admin=channel["admin"],
                             group=Group(name=channel["group"]),

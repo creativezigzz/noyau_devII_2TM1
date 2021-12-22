@@ -20,7 +20,7 @@ class ParamNotFoundException(Exception):
 class Channel:
     """class to create a new channel, it can add and remove members to this channel"""
 
-    def __init__(self, channel_name: str, channel_admin: str, group: Group, channel_members: list, chat_history=None):
+    def __init__(self, channel_id: str, channel_name: str, channel_admin: str, group: Group, channel_members: list, chat_history=None):
         """create a new channel based on a name, an administrator, some members and a chat history"""
         """
         PRE : channel_name and channel_admin are strings, group is Group, channel_members and chat_history are lists of strings
@@ -29,6 +29,7 @@ class Channel:
         if chat_history is None:
             chat_history = []
         self.id = uuid.uuid4()  # génère un id aléatoire (et unique)
+        self.channel_id = channel_id
         self.channel_name = channel_name
         self.channel_admin = channel_admin
         self.group = group

@@ -78,7 +78,7 @@ class ChannelsContainer(ScrollView):
                 groups[channel.group.name] = group
 
             channel_name_row = ChannelsListButton(text=channel.channel_name,
-                                                  on_press=lambda a, _membres=channel.channel_members, _id=channel.id,
+                                                  on_press=lambda a, _membres=channel.channel_members, _id=channel.channel_id,
                                                                   _channel=channel:
                                                   self.display_landing_screen(_membres, _channel, self.team, _id)
                                                   )
@@ -185,7 +185,6 @@ class ParticipantContainer(ScrollView):
                     if document["data"]["name"] == self.team.name:
                         for x in document["data"]["channels"]:
                             print(x)
-                            coll = x["membres"]
                             if x["name"] == channel.channel_name:
                                 print(self.membres_list)
 
@@ -199,7 +198,7 @@ class ParticipantContainer(ScrollView):
                                 # connector.db["teams"][compteur]["data"]["channel"]
                                 membre = {"pseudo": member_pseudo}
                                 print(membre)
-                                coll.insert_one(membre)
+                                #coll.insert_one(membre)
                                 print("après")
                                 print(x["membres"])
                     compteur += 1

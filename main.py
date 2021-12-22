@@ -40,8 +40,8 @@ def verification_collection():
         with MongoConnector() as connector:
             print(connector.db.list_collection_names())
             # print(connector.db["messages"].find_one())
-            # delete = connector.db["teams"].delete_many({})
-            # print(delete.deleted_count, " documents deleted.")
+            #delete = connector.db["teams"].delete_many({})
+            #print(delete.deleted_count, " documents deleted.")
             if connector.db["teams"].find_one() is None:
                 print("team est vide")
                 set_collection_team()
@@ -51,8 +51,8 @@ def verification_collection():
             if connector.db["channel"].find_one() is None:
                 print("channel est vide")
                 # set_collection_channel()
-            # for x in connector.db["teams"].find():
-            #     print(x["_id"])
+            for x in connector.db["teams"].find():
+                 print(x)
 
     except Exception as e:
         print(e)
@@ -72,25 +72,25 @@ def set_collection_team():
                 {"pseudo": "Jacques"},
             ],
             "channels": [
-                {"id": "test1",
+                {"id": "a11b4ee7-8743-4607-b838-acc1298a5f7a",
                  "name": "pis",
                  "admin": "Bilou",
                  "group": "group_test1",
                  "membres": [{"pseudo": "SerialMatcher"},
                              {"pseudo": "Jacques"}]},
-                {"id": "test1",
+                {"id": "a11b4ee7-8743-4607-b838-acc1298a5fer",
                  "name": "channel_de_test1",
                  "admin": "Bilou",
                  "group": "group_test1",
                  "membres": [{"pseudo": "SerialMatcher"},
                              {"pseudo": "Jacques"}]},
-                {"id": "test2",
+                {"id": "a11b4ee7-8743-4607-b838-acc1298arrr",
                  "name": "channel_de_test2",
                  "admin": "Bilou",
                  "group": "group_test2",
                  "membres": [{"pseudo": "SerialMatcher"},
                              {"pseudo": "Jacques"}]},
-                {"id": "test3",
+                {"id": "a11b4ee7-8743-4607-b838-acc1298a5f7b",
                  "name": "channel_de_test3",
                  "admin": "Bilou",
                  "group": "group_test2",
@@ -112,19 +112,19 @@ def set_collection_team():
                 {"pseudo": "Jacques"},
             ],
             "channels": [
-                {"id": "test1",
+                {"id": "b816ef54-7a5c-448a-972c-78267ae371c6",
                  "name": "channel_de_test1",
                  "admin": "Bilou",
                  "group": "group_test1",
                  "membres": [{"pseudo": "SerialMatcher"},
                              {"pseudo": "Jacques"}]},
-                {"id": "test2",
+                {"id": "b816ef54-7a5c-448a-972c-78267ae371az",
                  "name": "channel_de_test2",
                  "admin": "Bilou",
                  "group": "group_test1",
                  "membres": [{"pseudo": "SerialMatcher"},
                              {"pseudo": "Jacques"}]},
-                {"id": "test3",
+                {"id": "b816ef54-7a5c-448a-972c-78267ae371tb",
                  "name": "channel_de_test3",
                  "admin": "Bilou",
                  "group": "group_test2",
