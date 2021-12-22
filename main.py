@@ -59,7 +59,7 @@ def verification_collection():
 
 
 def set_collection_team():
-    # donnée qui sont en Db utilisé lors de la recréation de la collection
+    # données qui sont en Db utilisé lors de la recréation de la collection
     data = [{
         "_id": "0000000",
         "data": {

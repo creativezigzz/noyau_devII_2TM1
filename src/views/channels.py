@@ -153,7 +153,8 @@ class ParticipantContainer(ScrollView):
         self.init_member_list()
         self.sm = ScreensManager()
         self.landing_screen = self.get_landing_screen()
-        self.add_member_to_channel("test", channel)
+
+        # self.add_member_to_channel("test", channel)
 
     def get_landing_screen(self):
         try:
@@ -166,34 +167,44 @@ class ParticipantContainer(ScrollView):
 
         self.content.clear_widgets()
         for member in self.membres_list:
-            channel_label = MembersListButton(text=member["pseudo"])
-            self.content.add_widget(channel_label)
+            member_label = MembersListButton(text=member["pseudo"])
+            self.content.add_widget(member_label)
+        add_button_label = MembersListButton(text="Ajouter")
+        add_button_label.bind(on_press=lambda a: self.add_member_to_channel("test", self.channel))
+        self.content.add_widget(add_button_label)
 
     def add_member_to_channel(self, member_pseudo: str, channel: list):
         try:
             with MongoConnector() as connector:
                 collection = connector.db["teams"].find()
                 # ajout dans la db
-                test =connector.db["teams"][0]["name"].find()
-                print(test)
+                compteur = 0
+
                 for document in collection:
-                    # print(document)
-                    print(document["_id"])
+
                     if document["data"]["name"] == self.team.name:
                         for x in document["data"]["channels"]:
+                            print(x)
+                            coll = x["membres"]
                             if x["name"] == channel.channel_name:
-                                print(channel.channel_name)
-                                nouvelle_list_membre = x["membres"]
-                                nouvelle_list_membre.append({"pseudo": member_pseudo})
-                                print(nouvelle_list_membre)
+                                print(self.membres_list)
 
-                                # x["membres"].update_one(x["membres"], nouvelle_list_membre)
+                                self.membres_list.append({"pseudo": member_pseudo})
                                 print(x["membres"])
+                                print("avant")
+                                # ajout dans la liste
+                                #delete = x["membres"].delete_many()
+                                #print(delete.deleted_count, " documents deleted.")
+                                #print(x["membres"])
+                                # connector.db["teams"][compteur]["data"]["channel"]
+                                membre = {"pseudo": member_pseudo}
+                                print(membre)
+                                coll.insert_one(membre)
+                                print("après")
+                                print(x["membres"])
+                    compteur += 1
 
         except Exception as e:
             print(e)
-
-
-        # ajout dans la liste
-        #self.membres_list.append({"pseudo": member_pseudo})
-        #self.init_member_list()
+        # refaire de la liste
+        self.init_member_list()
