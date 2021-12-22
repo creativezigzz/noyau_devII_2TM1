@@ -39,11 +39,16 @@ class ChannelsListButton(Button):
     pass
 
 
+class MembersListButton(Button):
+    pass
+
+
 class ChannelsContainer(ScrollView):
-    def __init__(self, channels_list: list, team_name: str):
+    def __init__(self, channels_list: list, team_name: str, team: list):
         super(ChannelsContainer, self).__init__()
         self.channels_list = channels_list
         self.team_name = team_name
+        self.team = team
         self.channels_container = self.ids.channels_content
         self.sm = ScreensManager()
         self.landing_screen = self.get_landing_screen()
@@ -73,12 +78,17 @@ class ChannelsContainer(ScrollView):
                 groups[channel.group.name] = group
 
             channel_name_row = ChannelsListButton(text=channel.channel_name,
-                                                  on_press=lambda a, _id=channel.id:
-                                                  self.landing_screen.display_conversation(_id)
-                                                  # and self.landing_screen.display_participant_channel(_id)
+                                                  on_press=lambda a, _membres=channel.channel_members, _id=channel.id,
+                                                                  _channel=channel:
+                                                  self.display_landing_screen(_membres, _channel, self.team, _id)
                                                   )
+            # , _id=channel.id
+            # self.landing_screen.display_conversation(_id)
             groups[group_name].add_widget(channel_name_row)
-        print(group)
+
+    def display_landing_screen(self, membres, channel, team, id_channel):
+        self.landing_screen.display_participant_channel(membres, channel, team)
+        self.landing_screen.display_conversation(id_channel)
 
     def add_new_channel(self, group_name):
         """
@@ -126,6 +136,7 @@ class ChannelsContainer(ScrollView):
                     if document["data"]["name"] == team_name:
                         team = document["data"]["channels"]
                         team.append(channel)
+                        self.channels_list.append(channel)
                 # actualisation de la liste des channel
                 landing_screen.display_channels(self.channels_list)
         except Exception as e:
@@ -133,25 +144,56 @@ class ChannelsContainer(ScrollView):
 
 
 class ParticipantContainer(ScrollView):
-    def __int__(self, channel_id):
+    def __init__(self, member_list, channel, team):
         super(ParticipantContainer, self).__init__()
-        self.id_channel = channel_id
-        self.get_collection(self)
+        self.content = self.ids.member_content
+        self.membres_list = member_list
+        self.channel = channel
+        self.team = team
+        self.init_member_list()
+        self.sm = ScreensManager()
+        self.landing_screen = self.get_landing_screen()
+        self.add_member_to_channel("test", channel)
 
-    def set_collection_team(self):
-        pass
+    def get_landing_screen(self):
+        try:
+            landing_screen = self.sm.get_screen("landing")
+            return landing_screen
+        except ScreenManagerException:
+            return None
 
-    def get_collection(self):
+    def init_member_list(self):
+
+        self.content.clear_widgets()
+        for member in self.membres_list:
+            channel_label = MembersListButton(text=member["pseudo"])
+            self.content.add_widget(channel_label)
+
+    def add_member_to_channel(self, member_pseudo: str, channel: list):
         try:
             with MongoConnector() as connector:
-                print("passé dans get_collection")
-                collection = connector.db["teams"]
+                collection = connector.db["teams"].find()
+                # ajout dans la db
+                test =connector.db["teams"][0]["name"].find()
+                print(test)
                 for document in collection:
-                    pass
+                    # print(document)
+                    print(document["_id"])
+                    if document["data"]["name"] == self.team.name:
+                        for x in document["data"]["channels"]:
+                            if x["name"] == channel.channel_name:
+                                print(channel.channel_name)
+                                nouvelle_list_membre = x["membres"]
+                                nouvelle_list_membre.append({"pseudo": member_pseudo})
+                                print(nouvelle_list_membre)
+
+                                # x["membres"].update_one(x["membres"], nouvelle_list_membre)
+                                print(x["membres"])
+
         except Exception as e:
             print(e)
 
-    def get_participant(self):
-        print("dans get_paticipant")
-        participant_list = []
-        return participant_list
+
+        # ajout dans la liste
+        #self.membres_list.append({"pseudo": member_pseudo})
+        #self.init_member_list()

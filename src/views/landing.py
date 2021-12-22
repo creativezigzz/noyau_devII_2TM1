@@ -43,16 +43,17 @@ class LandingScreen(Screen):
         """
         self.sm.redirect(href)
 
-    def display_channels(self, team_channels: list, team_name: str):
+    def display_channels(self, team_channels: list, team_name: str, team: list):
         """
             [Base]
             Permet la mise à jour de la liste des "Channel" après un clic sur le nom d'une "Team".
             :param team_channels: Liste des 'Channel' de la "Team" concernée.
+            :param team_name: Nom de la "Team" concernée.
         """
         self.conv_box.clear_widgets()
         self.participant_box.clear_widgets()
         self.rooms_box.clear_widgets()
-        self.rooms_box.add_widget(ChannelsContainer(team_channels, team_name))
+        self.rooms_box.add_widget(ChannelsContainer(team_channels, team_name, team))
 
     def display_conversation(self, channel_id: str):
         """
@@ -64,17 +65,17 @@ class LandingScreen(Screen):
         conversation = Conversation(channel_id)
         self.conv_box.add_widget(conversation)
 
-    def display_participant_channel(self, channel_id: str):
+    def display_participant_channel(self, member_list: list, channel: list, team: list):
         """
             Permet la mise à jour des participants du channel après un clic sur le nom d'un "Channel".
-            :param channel_id: L'identifiant du "Channel" concerné sur 8 caractères.
+            :param member_list: La liste des membres du channel
+            :param channel: La liste des channels
+            :param team: La team
         """
+        print(member_list)
         self.participant_box.clear_widgets()
-        self.participant_box.add_widget(ParticipantContainer(channel_id))
-
-        # participant = ChannelsContainer(channel_id).get_participant()
-        # print(participant.channel_members)
-        # self.participant_box.add_widget(participant.channel_members)gg
+        member = ParticipantContainer(member_list, channel, team)
+        self.participant_box.add_widget(member)
 
     def set_teams_list(self):
         """

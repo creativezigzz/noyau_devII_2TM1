@@ -69,7 +69,7 @@ class TeamsContainer(ScrollView):
 
                         self.data_from_db[document["_id"]]["channels"].append(data)
 
-                    #return self.data_from_db
+                    # return self.data_from_db
 
 
         except Exception as e:
@@ -93,12 +93,10 @@ class TeamsContainer(ScrollView):
 
         if teams_list:
             for team in teams_list:
-                print(team)
-                print(team.name)
-                print(team.channels)
                 channel_label = TeamsListButton(text=team.name)
                 channel_label.bind(
-                    on_press=lambda a, _channels=team.channels,_name=team.name: landing_screen.display_channels(_channels, _name))
+                    on_press=lambda a, _channels=team.channels, _name=team.name, _team=team: landing_screen.display_channels(
+                        _channels, _name, _team))
                 self.content.add_widget(channel_label)
         else:
             self.content.add_widget(EmptyTeams())

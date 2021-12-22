@@ -36,7 +36,7 @@ class Channel:
         self.channel_members = channel_members  # pour moi channel_members serait une
         # liste de string (comme ça on peut ajouter et supprimer des membres facilement
         # ajout automatique de l'admin dans la liste des membres
-        self.channel_members.append(self.channel_admin)
+        self.channel_members.append({"pseudo": self.channel_admin})
         self.chat_history = chat_history  # même chose que pour channel_members
         try:
             with MongoConnector() as connector:
