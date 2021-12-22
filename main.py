@@ -51,8 +51,16 @@ def verification_collection():
             if connector.db["channel"].find_one() is None:
                 print("channel est vide")
                 # set_collection_channel()
-            # for x in connector.db["teams"].find():
-            #     print(x["_id"])
+            #for x in connector.db["teams"].find():
+            #    print(x["_id"])
+
+            try:
+                with MongoConnector() as connector:
+                    collection = connector.db["messages"].find()
+                    for document in collection:
+                        print(document)
+            except Exception as e:
+                print(e)
 
     except Exception as e:
         print(e)
