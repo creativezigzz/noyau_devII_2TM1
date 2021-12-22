@@ -54,6 +54,14 @@ def verification_collection():
             for x in connector.db["teams"].find():
                  print(x)
 
+            try:
+                with MongoConnector() as connector:
+                    collection = connector.db["messages"].find()
+                    for document in collection:
+                        print(document)
+            except Exception as e:
+                print(e)
+
     except Exception as e:
         print(e)
 
