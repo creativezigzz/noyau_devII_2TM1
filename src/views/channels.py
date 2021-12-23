@@ -46,6 +46,10 @@ class MembersListButton(Button):
 
 class ChannelsContainer(ScrollView):
     def __init__(self, channels_list: list, team_name: str, team: list):
+        """display the member-box and the messages-box"""
+        """
+        PRE : membres is list of strings, channel is Channel, team and id_channel are string
+        """
         super(ChannelsContainer, self).__init__()
         self.channels_list = channels_list
         self.team_name = team_name
@@ -56,6 +60,10 @@ class ChannelsContainer(ScrollView):
         self.generate_list_rows()
 
     def get_landing_screen(self):
+        """Recuperation du landing_screen"""
+        """
+        POST : return landing_screen
+        """
         try:
             landing_screen = self.sm.get_screen("landing")
             return landing_screen
@@ -63,6 +71,7 @@ class ChannelsContainer(ScrollView):
             return None
 
     def generate_list_rows(self):
+        """génerate the list of groups and channles"""
         groups = {}
 
         for channel in self.channels_list:
@@ -78,7 +87,8 @@ class ChannelsContainer(ScrollView):
                 self.channels_container.add_widget(group)
                 groups[channel.group.name] = group
             channel_name_row = ChannelsListButton(text=channel.channel_name,
-                                                  on_press=lambda a, _membres=channel.channel_members, _id=channel.channel_id,
+                                                  on_press=lambda a, _membres=channel.channel_members,
+                                                                  _id=channel.channel_id,
                                                                   _channel=channel:
                                                   self.display_landing_screen(_membres, _channel, self.team, _id)
                                                   )
@@ -87,6 +97,10 @@ class ChannelsContainer(ScrollView):
             groups[group_name].add_widget(channel_name_row)
 
     def display_landing_screen(self, membres, channel, team, id_channel):
+        """display the member-box and the messages-box"""
+        """
+        PRE : membres is list of strings, channel is Channel, team and id_channel are string
+        """
         self.landing_screen.display_participant_channel(membres, channel, team)
         self.landing_screen.display_conversation(id_channel)
 
@@ -129,6 +143,11 @@ class ChannelsContainer(ScrollView):
         popup.open()
 
     def add_new_channel_on_db(self, channel: Channel, team_name):
+        """create a new channel into the Db"""
+        """
+        PRE : team_name is strings, group is Group, channel is an Channel object
+        
+        """
         global landing_screen
         try:
             landing_screen = self.sm.get_screen("landing")
@@ -164,6 +183,10 @@ class ChannelsContainer(ScrollView):
 
 class ParticipantContainer(ScrollView):
     def __init__(self, member_list, channel, team):
+        """create a new channel based on a name, an administrator, some members and a chat history"""
+        """
+        PRE : member_list is list, channel is Channel object, team is strings
+        """
         super(ParticipantContainer, self).__init__()
         self.content = self.ids.member_content
         self.membres_list = member_list
@@ -176,6 +199,10 @@ class ParticipantContainer(ScrollView):
         # self.add_member_to_channel("test", channel)
 
     def get_landing_screen(self):
+        """get the landing screen"""
+        """
+        POST : return the landing_screen
+        """
         try:
             landing_screen = self.sm.get_screen("landing")
             return landing_screen
@@ -183,7 +210,7 @@ class ParticipantContainer(ScrollView):
             return None
 
     def init_member_list(self):
-
+        """set the member list of the current channel"""
         self.content.clear_widgets()
         for member in self.membres_list:
             member_label = MembersListButton(text=member["pseudo"])
@@ -193,6 +220,10 @@ class ParticipantContainer(ScrollView):
         self.content.add_widget(add_button_label)
 
     def add_member_to_channel(self, member_pseudo: str, channel: list):
+        """add a new membre in the channel and update data on DB"""
+        """
+        PRE : member_pseudo is string , channel is Channel object
+        """
         try:
             with MongoConnector() as connector:
                 collection = connector.db["teams"].find()
@@ -211,14 +242,14 @@ class ParticipantContainer(ScrollView):
                                 print(x["membres"])
                                 print("avant")
                                 # ajout dans la liste
-                                #delete = x["membres"].delete_many()
-                                #print(delete.deleted_count, " documents deleted.")
-                                #print(x["membres"])
+                                # delete = x["membres"].delete_many()
+                                # print(delete.deleted_count, " documents deleted.")
+                                # print(x["membres"])
                                 # connector.db["teams"][compteur]["data"]["channel"]
                                 membre = {"pseudo": member_pseudo}
-                                #channel.add_member(member_pseudo)
+                                # channel.add_member(member_pseudo)
                                 print(membre)
-                                #coll.insert_one(membre)
+                                # coll.insert_one(membre)
                                 print("après")
                                 print(x["membres"])
                     compteur += 1
