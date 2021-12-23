@@ -90,7 +90,7 @@ class ChannelsContainer(ScrollView):
         self.landing_screen.display_participant_channel(membres, channel, team)
         self.landing_screen.display_conversation(id_channel)
 
-        def add_new_channel(self, group_name):
+    def add_new_channel(self, group_name):
         """
         Cette méthode permet d'ajouter un nouveau channel dans le groupe concerné.
         :param group_name: Représente le nom du groupe concerné.
