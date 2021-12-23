@@ -118,6 +118,7 @@ class ChannelsContainer(ScrollView):
         cancel.bind(on_press=lambda a: popup.dismiss())
         team = self.team_name
         Ajouter.bind(on_press=lambda a: self.add_new_channel_on_db(Channel(
+            channel_id="a11b4ee7-8743-4685-b838-acc1298a5fer",
             channel_name=self.channel.text,
             channel_admin="Moi_test",
             group=Group(name=group_name),
@@ -215,6 +216,7 @@ class ParticipantContainer(ScrollView):
                                 #print(x["membres"])
                                 # connector.db["teams"][compteur]["data"]["channel"]
                                 membre = {"pseudo": member_pseudo}
+                                #channel.add_member(member_pseudo)
                                 print(membre)
                                 #coll.insert_one(membre)
                                 print("après")

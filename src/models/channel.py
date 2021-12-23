@@ -67,7 +67,7 @@ class Channel:
         POST : member is added to the list of members of the channel
         """
         self.channel_members.append(member)
-        query = {"channel_name": self.channel_name}
+        query = {"channel_id": self.channel_id}
         new_member = {"$set": {
             "channel_members": self.channel_members
         }}
