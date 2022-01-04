@@ -5,6 +5,8 @@
     [BASE]
     Ce fichier représente la liste des 'Channel' disponibles pour l'utilisateur.
 """
+import uuid
+
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -18,8 +20,8 @@ from kivy.uix.textinput import TextInput
 from src.config import config
 from src.models.channel import Channel
 from src.models.group import Group
-from src.models.mongo_connector import MongoConnector
 from src.models.screens_manager import ScreensManager
+from src.models.team import Team
 
 Builder.load_file("{0}/channel.kv".format(config.VIEWS_DIR))
 
@@ -45,7 +47,7 @@ class MembersListButton(Button):
 
 
 class ChannelsContainer(ScrollView):
-    def __init__(self, channels_list_id: list, team_name: str, team: list):
+    def __init__(self, channels_list_id: list, team_name: str, team: Team):
         """display the member-box and the messages-box"""
         """
         PRE : membres is list of strings, channel is Channel, team and id_channel are string
@@ -72,6 +74,7 @@ class ChannelsContainer(ScrollView):
 
     def generate_list_rows(self):
         """génerate the list of groups and channles"""
+        self.channels_container.clear_widgets()
         groups = {}
         for channel in self.channels_list:
             group_name = channel.group.name
@@ -105,76 +108,50 @@ class ChannelsContainer(ScrollView):
         Cette méthode permet d'ajouter un nouveau channel dans le groupe concerné.
         :param group_name: Représente le nom du groupe concerné.
         """
+        # content est toute la popup
         content = RelativeLayout()
-        # comment faire ?
-        content.add_widget(Label(text="Le nom du nouveau channel et d'autres éléments"))
-        self.channel = TextInput(text='', font_size=14, size_hint_y=None, height=50,
-                                 pos_hint={'center_x': .5, 'center_y': .3})
-        content.add_widget(self.channel)
-        # content.add_widget(
-        # Button(text="Ajouter", size_hint=(None, None), size=(150, 40), pos_hint={'center_x': .4, 'center_y': .1}))
+        channel_name_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
+                                       pos_hint={'center_x': .5, 'center_y': .3})
+
         cancel = Button(text="Annuler", size_hint=(None, None), size=(150, 40),
                         pos_hint={'center_x': .6, 'center_y': .1})
-        content.add_widget(cancel)
-        Ajouter = Button(text="Ajouter", size_hint=(None, None), size=(150, 40),
+
+        ajouter = Button(text="Ajouter", size_hint=(None, None), size=(150, 40),
                          pos_hint={'center_x': .4, 'center_y': .1})
-        content.add_widget(Ajouter)
+        # ajout des button, de l'input et du label a la popup
+        content.add_widget(Label(text="Le nom du nouveau channel et d'autres éléments"))
+        content.add_widget(channel_name_input)
+        content.add_widget(ajouter)
+        content.add_widget(cancel)
         popup = Popup(title="Ajouter un nouveau channel à {0}".format(group_name),
                       size_hint=(.5, .5),
                       pos_hint={'center_x': .5, 'center_y': .5},
                       content=content,
                       auto_dismiss=False)
+        team = self.team_object
 
+        # définition des actions liée au button
         cancel.bind(on_press=lambda a: popup.dismiss())
-        team = self.team_name
-        Ajouter.bind(on_press=lambda a: self.add_new_channel_on_db(Channel(
-            channel_id="a11b4ee7-8743-4685-b838-acc1298a5fer",
-            channel_name=self.channel.text,
-            channel_admin="Moi_test",
-            group=Group(name=group_name),
-            channel_members=[],
-            chat_history=None
-        ), team))
-        # self.add_new_channel_on_db(channel_created, self.team_name)
+        ajouter.bind(on_press=lambda a: self.add_new_channel_on_db(channel_name_input.text, group_name,
+                                                                   team) and popup.dismiss())
         popup.open()
 
-    def add_new_channel_on_db(self, channel: Channel, team_name):
-        """create a new channel into the Db"""
+    def add_new_channel_on_db(self, channel_name, group_name, team: Team):
+        """create a new channel into the Db (into channel collection and into team collection) """
         """
-        PRE : team_name is strings, group is Group, channel is an Channel object
-        
+        PRE : team is an Team object , channel is an Channel object
         """
-        global landing_screen
-        try:
-            landing_screen = self.sm.get_screen("landing")
-        except ScreenManagerException:
-            pass
-        try:
-            with MongoConnector() as connector:
-                print("passé dans add_new_channel")
-                collection = connector.db["teams"].find()
-                # ajout dans la db
-                for document in collection:
-                    print("ok1")
-                    data_document = document["data"]
-                    if data_document["name"] == team_name:
-                        print("ok")
-                        team = data_document["channels"]
-                        channel_in_db_format = {"_id": channel.id, "channel_name": channel.channel_name,
-                                                "channel_admin": channel.channel_admin, "Group": channel.group.name,
-                                                "channel_members": channel.channel_members,
-                                                "chat_history": channel.chat_history}
-                        team.append(channel_in_db_format)  # ok jusque ici
-                        print(team)
-                        print(team_name)
-                        connector.db["teams"].update({"data": {"name": team_name}},
-                                                     {"$push": {"data": {"channels": channel_in_db_format}}})
-                        # marche pas pour l'instant, je penses que c'est parce que les channels ne se trouve directement
-                        # dans la collection mais dans le champ 'data'
+        new_channel = Channel(
 
-                landing_screen.display_channels(self.channels_list)
-        except Exception as e:
-            print(e)
+            channel_id=str(uuid.uuid4()),
+            channel_name=channel_name,
+            channel_admin="Admin_test",
+            group=Group(name=group_name),
+            channel_members=[]
+        )
+        new_channel.send_to_db()
+        team.add_channel_to_current_team(new_channel)
+        self.generate_list_rows()
 
 
 class ParticipantContainer(ScrollView):
@@ -220,6 +197,7 @@ class ParticipantContainer(ScrollView):
         """
         self.channel.add_member(member_pseudo)
         self.init_member_list()
+
 
 # a modifier pour que la liste des membres de la team s'affiche lors d'un click sur le nom de team
 class ParticipantTeamContainer(ScrollView):

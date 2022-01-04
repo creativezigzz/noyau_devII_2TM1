@@ -17,6 +17,7 @@ from src.config import config
 from src.models.channel import Channel
 from src.models.mongo_connector import MongoConnector
 from src.models.screens_manager import ScreensManager
+from src.models.team import Team
 from src.views.conversation import Conversation
 from src.views.teams_container import TeamsContainer
 from src.views.channels import ChannelsContainer, ParticipantContainer, ParticipantTeamContainer
@@ -44,7 +45,7 @@ class LandingScreen(Screen):
         """
         self.sm.redirect(href)
 
-    def display_channels(self, channels_current_team: list, team_name: str, team: list):
+    def display_channels(self, channels_current_team: list, team_name: str, team: Team):
         """
             [Base]
             Permet la mise à jour de la liste des "Channel" après un clic sur le nom d'une "Team".

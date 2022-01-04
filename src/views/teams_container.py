@@ -60,7 +60,7 @@ class TeamsContainer(ScrollView):
 
                             if channel["channel_id"] == i:
                                 data = Channel(
-                                    id=channel["_id"],
+
                                     channel_id=channel["channel_id"],
                                     channel_name=channel["name"],
                                     channel_admin=channel["admin"],
@@ -97,7 +97,9 @@ class TeamsContainer(ScrollView):
             for team in teams_list:
                 channel_label = TeamsListButton(text=team.name)
                 channel_label.bind(
-                    on_press=lambda a, _channels=team.channels, _name=team.name,
+                    on_press=lambda a,
+                                    _channels=team.channels,
+                                    _name=team.name,
                                     _team=team: landing_screen.display_channels(_channels, _name, _team))
                 self.content.add_widget(channel_label)
         else:

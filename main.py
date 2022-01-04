@@ -36,19 +36,50 @@ load_dotenv()
 Builder.load_file("{0}/common.kv".format(config.VIEWS_DIR))
 
 
+class Main(App):
+    title = 'EpheCom'
+
+    def build(self):
+        from src.views.landing import LandingScreen
+
+        sm = ScreensManager()
+        landing_screen = LandingScreen()
+        sm.add_widget(landing_screen)
+        sm.current = "landing"
+        verification_collection()
+        landing_screen.set_teams_list()
+        return sm
+
+
+class Personne:
+    def __init__(self, nom):
+        self.nom = nom
+
+
+class Etudiant(Personne):
+    def __init__(self, nom):
+        super(Etudiant, self).__init__(nom)
+
+
 def verification_collection():
     try:
         with MongoConnector() as connector:
             print(connector.db.list_collection_names())
             # print(connector.db["messages"].find_one())
+
             # suppression des teams en DB
             # delete_team = connector.db["teams"].delete_many({})
             # print(delete_team.deleted_count, " teams deleted.")
+
             # suppression des channels en DB
             # delete_channel = connector.db["channels"].delete_many({})
             # print(delete_channel.deleted_count, " channels deleted.")
+
+            # suppression des messages en DB
             # delete_messages = connector.db["messages"].delete_many({})
             # print(delete_messages.deleted_count, " messages deleted.")
+
+            # création des collections si elles sont vides
             if connector.db["teams"].find_one() is None:
                 print("team est vide")
                 set_collection_team()
@@ -60,6 +91,8 @@ def verification_collection():
                 set_collection_message()
             else:
                 print("ok data correctes")
+
+            # affichage en console des différentes collections
             for x in connector.db["teams"].find():
                 print(x)
             for x in connector.db["channels"].find():
@@ -229,104 +262,6 @@ def set_collection_channel():
         print(e)
 
 
-class Main(App):
-    title = 'EpheCom'
-
-    def build(self):
-        from src.views.landing import LandingScreen
-
-        sm = ScreensManager()
-        landing_screen = LandingScreen()
-        sm.add_widget(landing_screen)
-        sm.current = "landing"
-        verification_collection()
-        landing_screen.set_teams_list()
-        return sm
-
-
-class Personne:
-    def __init__(self, nom):
-        self.nom = nom
-
-
-class Etudiant(Personne):
-    def __init__(self, nom):
-        super(Etudiant, self).__init__(nom)
-
-
 if __name__ == '__main__':
     print("Bienvenue sur notre projet commun !")
     Main().run()
-
-ancienne_data1 = [{
-    "_id": "0000000",
-    "data": {
-        "name": "Pis",
-        "icon_path": "",
-        "participants": [
-            {"pseudo": "SerialMatcher"},
-            {"pseudo": "Bilou"},
-            {"pseudo": "Babar"},
-            {"pseudo": "Jacques"},
-        ],
-        "channels": [
-            {"id": "a11b4ee7-8743-4607-b838-acc1298a5f7a",
-             "name": "pis",
-             "admin": "Bilou",
-             "group": "group_test1",
-             "membres": [{"pseudo": "SerialMatcher"},
-                         {"pseudo": "Jacques"}]},
-            {"id": "a11b4ee7-8743-4607-b838-acc1298a5fer",
-             "name": "channel_de_test1",
-             "admin": "Bilou",
-             "group": "group_test1",
-             "membres": [{"pseudo": "SerialMatcher"},
-                         {"pseudo": "Jacques"}]},
-            {"id": "a11b4ee7-8743-4607-b838-acc1298arrr",
-             "name": "channel_de_test2",
-             "admin": "Bilou",
-             "group": "group_test2",
-             "membres": [{"pseudo": "SerialMatcher"},
-                         {"pseudo": "Jacques"}]},
-            {"id": "a11b4ee7-8743-4607-b838-acc1298a5f7b",
-             "name": "channel_de_test3",
-             "admin": "Bilou",
-             "group": "group_test2",
-             "membres": [{"pseudo": "SerialMatcher"},
-                         {"pseudo": "Jacques"},
-                         {"pseudo": "SerialMatcher"}]}
-        ]
-    }
-}]
-ancienne_data2 = [{
-    "_id": "0000001",
-    "data": {
-        "name": "Pan",
-        "icon_path": "",
-        "participants": [
-            {"pseudo": "SerialMatcher"},
-            {"pseudo": "Bilou"},
-            {"pseudo": "Babar"},
-            {"pseudo": "Jacques"},
-        ],
-        "channels": [
-            {"id": "b816ef54-7a5c-448a-972c-78267ae371c6",
-             "name": "channel_de_test1",
-             "admin": "Bilou",
-             "group": "group_test1",
-             "membres": [{"pseudo": "SerialMatcher"},
-                         {"pseudo": "Jacques"}]},
-            {"id": "b816ef54-7a5c-448a-972c-78267ae371az",
-             "name": "channel_de_test2",
-             "admin": "Bilou",
-             "group": "group_test1",
-             "membres": [{"pseudo": "SerialMatcher"},
-                         {"pseudo": "Jacques"}]},
-            {"id": "b816ef54-7a5c-448a-972c-78267ae371tb",
-             "name": "channel_de_test3",
-             "admin": "Bilou",
-             "group": "group_test2",
-             "membres": [{"pseudo": "SerialMatcher"},
-                         {"pseudo": "Babar"}]}
-        ]
-    }}]

@@ -20,7 +20,7 @@ class ParamNotFoundException(Exception):
 class Channel:
     """class to create a new channel, it can add and remove members to this channel"""
 
-    def __init__(self, id: str, channel_id: str, channel_name: str, channel_admin: str, group: Group,
+    def __init__(self, channel_id: str, channel_name: str, channel_admin: str, group: Group,
                  channel_members: list,
                  chat_history=None):
         """create a new channel based on a name, an administrator, some members and a chat history"""
@@ -32,7 +32,7 @@ class Channel:
         """
         if chat_history is None:
             chat_history = []
-        self.id = id  # génère un id aléatoire (et unique)
+        self._id = uuid.uuid4()
         self.channel_id = channel_id
         self.channel_name = channel_name
         self.channel_admin = channel_admin
@@ -66,13 +66,21 @@ class Channel:
         POST : the channel is sent to the database
         """
         query = {
-            "id": self.channel_id,
-            "channel_name": self.channel_name,
-            "channel_admin": self.channel_admin,
-            "channel_members": self.channel_members,
+            "channel_id": self.channel_id,
+            "name": self.channel_name,
+            "admin": self.channel_admin,
+            "group": self.group.name,
+            "membres": self.channel_members,
             # "chat_history": self.chat_history
         }
         self.__collection.insert_one(query)
+        # verification en console
+        try:
+            with MongoConnector() as connector:
+                for x in connector.db["channels"].find():
+                    print(x)
+        except Exception as e:
+            print(e)
 
     def add_member(self, member):
         """add a new member to the channel"""
