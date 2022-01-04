@@ -57,20 +57,18 @@ class ConversationContainer(ScrollView):
             with MongoConnector() as connector:
                 collection = connector.db["messages"].find()
                 for document in collection:
-                    print(channel_id)
                     if document['channel_id'] == channel_id:
-                        print("ici")
-                        msg = MessageSent(text=document["timestamp"] + " - " + document["sender"] + "\n" + document["msg"])
+                        msg = MessageSent(
+                            text=document["timestamp"] + " - " + document["sender"] + "\n" + document["msg"])
                         self.messages_box.add_widget(msg, len(self.messages_box.children))
         except Exception as e:
             print(e)
 
-
-        #conv_file_path = config.PUBLIC_DIR + "/tmp_conversations/basic.json"
-        #with open(conv_file_path) as json_file:
+        # conv_file_path = config.PUBLIC_DIR + "/tmp_conversations/basic.json"
+        # with open(conv_file_path) as json_file:
         #    conv = json.load(json_file)
 
-        #for message in conv["data"]:
+        # for message in conv["data"]:
         #    msg = MessageSent(text=message["timestamp"] + " - " + message["sender"] + "\n" + message["msg"])
         #    self.messages_box.add_widget(msg, len(self.messages_box.children))
 
@@ -85,9 +83,11 @@ class ConversationContainer(ScrollView):
 
 
 class Conversation(RelativeLayout):
-    def __init__(self, channel_id):
+    def __init__(self, channel):
         super(Conversation, self).__init__()
-        self.messages_container = ConversationContainer(channel_id)
+        print(channel.channel_id)
+        self.messages_container = ConversationContainer(channel.channel_id)
+        # self.messages_container = ConversationContainer(channel._id)
         self.inputs_container = InputsContainer()
 
         self.add_widget(self.messages_container)

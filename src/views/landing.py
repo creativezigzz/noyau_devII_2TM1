@@ -14,11 +14,12 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 
 from src.config import config
+from src.models.channel import Channel
 from src.models.mongo_connector import MongoConnector
 from src.models.screens_manager import ScreensManager
 from src.views.conversation import Conversation
 from src.views.teams_container import TeamsContainer
-from src.views.channels import ChannelsContainer, ParticipantContainer
+from src.views.channels import ChannelsContainer, ParticipantContainer, ParticipantTeamContainer
 
 Builder.load_file("{0}/header.kv".format(config.VIEWS_DIR))
 Builder.load_file("{0}/landing.kv".format(config.VIEWS_DIR))
@@ -43,26 +44,27 @@ class LandingScreen(Screen):
         """
         self.sm.redirect(href)
 
-    def display_channels(self, team_channels: list, team_name: str, team: list):
+    def display_channels(self, channels_current_team: list, team_name: str, team: list):
         """
             [Base]
             Permet la mise à jour de la liste des "Channel" après un clic sur le nom d'une "Team".
-            :param team_channels: Liste des 'Channel' de la "Team" concernée.
+            :param channels_current_team: Liste des 'Channel' de la "Team" concernée.
             :param team_name: Nom de la "Team" concernée.
+            :param team: l'objet Team concernant la team actuellement utilisée
         """
         self.conv_box.clear_widgets()
         self.participant_box.clear_widgets()
         self.rooms_box.clear_widgets()
-        self.rooms_box.add_widget(ChannelsContainer(team_channels, team_name, team))
+        self.rooms_box.add_widget(ChannelsContainer(channels_current_team, team_name, team))
 
-    def display_conversation(self, channel_id: str):
+    def display_conversation(self, channel: Channel):
         """
             [Base]
             Permet la mise à jour de la conversation active après un clic sur le nom d'un "Channel".
-            :param channel_id: L'identifiant du "Channel" concerné sur 8 caractères.
+            :param channel : la référence de l'objet channel dont cherche à afficher les messages
         """
         self.conv_box.clear_widgets()
-        conversation = Conversation(channel_id)
+        conversation = Conversation(channel)
         self.conv_box.add_widget(conversation)
 
     def display_participant_channel(self, member_list: list, channel: list, team: list):
@@ -72,7 +74,6 @@ class LandingScreen(Screen):
             :param channel: La liste des channels
             :param team: La team
         """
-        print(member_list)
         self.participant_box.clear_widgets()
         member = ParticipantContainer(member_list, channel, team)
         self.participant_box.add_widget(member)
@@ -84,3 +85,14 @@ class LandingScreen(Screen):
         """
         self.teams_container = TeamsContainer()
         self.team_box.add_widget(self.teams_container)
+
+# peut être a supprimé
+    def display_participant_team(self, member_list: list, team: list):
+        """
+            Permet la mise à jour des participants du channel après un clic sur le nom d'un "Channel".
+            :param member_list : La liste des membres de la team
+            :param team : La team
+        """
+        self.participant_box.clear_widgets()
+        member = ParticipantTeamContainer(member_list, team)
+        self.participant_box.add_widget(member)

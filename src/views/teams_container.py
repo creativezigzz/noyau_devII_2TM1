@@ -38,46 +38,47 @@ class TeamsContainer(ScrollView):
         self.sm = ScreensManager()
         self.data_from_db = {}
         self.set_data_from_db()
-        # print(self.data_from_db2)
 
         self.init_teams_list()
 
     def set_data_from_db(self):
+
         try:
             with MongoConnector() as connector:
                 collection = connector.db["teams"]
                 for document in collection.find():
-                    # print(document["data"]["name"])
-                    # print(document["_id"])
-                    self.data_from_db[document["_id"]] = {
 
-                        "name": document["data"]["name"],
+                    self.data_from_db[document["_id"]] = {
+                        "name": document["name"],
                         "icon_path": "",
-                        "participants": document["data"]["participants"],
+                        "participants": document["participants"],
                         "channels": []
                     }
+                    collection_channels = connector.db["channels"]
+                    for channel in collection_channels.find():
+                        for i in document["channel_id"]:
 
-                    for channel in document["data"]["channels"]:
-                        # print("test ajout des channel")
-                        data = Channel(
-                            channel_id=channel["id"],
-                            channel_name=channel["name"],
-                            channel_admin=channel["admin"],
-                            group=Group(name=channel["group"]),
-                            channel_members=channel["membres"],
-                            chat_history=None
-                        )
+                            if channel["channel_id"] == i:
+                                data = Channel(
+                                    id=channel["_id"],
+                                    channel_id=channel["channel_id"],
+                                    channel_name=channel["name"],
+                                    channel_admin=channel["admin"],
+                                    group=Group(name=channel["group"]),
+                                    channel_members=channel["membres"],
+                                    chat_history=None
+                                )
 
-                        self.data_from_db[document["_id"]]["channels"].append(data)
-
-                    # return self.data_from_db
-
+                                print(data.id)
+                                print(data.channel_id)
+                                self.data_from_db[document["_id"]]["channels"].append(data)
 
         except Exception as e:
             print(e)
 
-    def init_teams_list(self):
+        # print(self.data_from_db)
 
+    def init_teams_list(self):
         """
             [BASE]
             Initialise la liste des "Team" auxquelles l'utilisateur est inscrit.
@@ -96,8 +97,8 @@ class TeamsContainer(ScrollView):
             for team in teams_list:
                 channel_label = TeamsListButton(text=team.name)
                 channel_label.bind(
-                    on_press=lambda a, _channels=team.channels, _name=team.name, _team=team: landing_screen.display_channels(
-                        _channels, _name, _team))
+                    on_press=lambda a, _channels=team.channels, _name=team.name,
+                                    _team=team: landing_screen.display_channels(_channels, _name, _team))
                 self.content.add_widget(channel_label)
         else:
             self.content.add_widget(EmptyTeams())
@@ -121,10 +122,8 @@ class TeamsContainer(ScrollView):
                 icon_path = data_from_db[team_id]["icon_path"]
                 participants = data_from_db[team_id]["participants"]
                 channels = data_from_db[team_id]["channels"]
-
                 inst = Team(team_id, name, channels, icon_path=icon_path, participants=participants)
                 list_of_teams.append(inst)
-
             return list_of_teams
 
         return None

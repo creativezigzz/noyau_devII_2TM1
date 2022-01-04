@@ -53,7 +53,7 @@ class Message:
 
     def update_msg(self, new_msg):
 
-        self.__collection.find_one_and_update(self.msg_id, {'msg': new_msg})
+        self.__collection.find_one_and_update(self._id, {'msg': new_msg})
 
     def delete_db(self):
-        self.__collection.delete_one(self.msg_id)
+        self.__collection.delete_one(self._id)

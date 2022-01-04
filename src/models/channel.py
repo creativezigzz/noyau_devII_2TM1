@@ -20,15 +20,19 @@ class ParamNotFoundException(Exception):
 class Channel:
     """class to create a new channel, it can add and remove members to this channel"""
 
-    def __init__(self, channel_id: str, channel_name: str, channel_admin: str, group: Group, channel_members: list, chat_history=None):
+    def __init__(self, id: str, channel_id: str, channel_name: str, channel_admin: str, group: Group,
+                 channel_members: list,
+                 chat_history=None):
         """create a new channel based on a name, an administrator, some members and a chat history"""
         """
-        PRE : channel_name and channel_admin are strings, group is Group, channel_members and chat_history are lists of strings
+        PRE : channel_name and channel_admin are strings,
+         group is Group,
+         channel_members and chat_history are lists of strings
         POST : a new Channel object is created
         """
         if chat_history is None:
             chat_history = []
-        # self.id = uuid.uuid4()  # génère un id aléatoire (et unique)
+        self.id = id  # génère un id aléatoire (et unique)
         self.channel_id = channel_id
         self.channel_name = channel_name
         self.channel_admin = channel_admin
@@ -37,14 +41,23 @@ class Channel:
         self.channel_members = channel_members  # pour moi channel_members serait une
         # liste de string (comme ça on peut ajouter et supprimer des membres facilement
         # ajout automatique de l'admin dans la liste des membres
-        self.channel_members.append({"pseudo": self.channel_admin})
+        self.channel_members.append(self.channel_admin)
         self.chat_history = chat_history  # même chose que pour channel_members
+
         try:
             with MongoConnector() as connector:
-                self.__collection = connector.db["chat"]
+                self.__collection = connector.db["channels"]
 
         except Exception as error:
             print(error)
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id = value
 
     def send_to_db(self):
         """send the channel to the database"""
@@ -53,10 +66,11 @@ class Channel:
         POST : the channel is sent to the database
         """
         query = {
+            "id": self.channel_id,
             "channel_name": self.channel_name,
             "channel_admin": self.channel_admin,
             "channel_members": self.channel_members,
-            "chat_history": self.chat_history
+            # "chat_history": self.chat_history
         }
         self.__collection.insert_one(query)
 
@@ -69,9 +83,9 @@ class Channel:
         self.channel_members.append(member)
         query = {"channel_id": self.channel_id}
         new_member = {"$set": {
-            "channel_members": self.channel_members
+            "membres": self.channel_members
         }}
-        self.__collection.update_one(query, new_member)
+        self.__collection.update_one(filter=query, update=new_member)
 
     def remove_member(self, member):
         """remove a member from the channel, it remove all the members that have the pseudo member"""
