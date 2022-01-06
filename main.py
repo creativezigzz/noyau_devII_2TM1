@@ -32,12 +32,10 @@ from kivy.uix.popup import Popup
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.textinput import TextInput
 
-import db_delete_document
-import db_verify
-
 import src.config.config as config
 from src.models.screens_manager import ScreensManager
 from src.models.user import User
+from src.utils import db_delete_document, db_verify
 
 load_dotenv()
 

@@ -1,4 +1,4 @@
-import db_set
+from src.utils import db_set
 from src.models.mongo_connector import MongoConnector
 
 
