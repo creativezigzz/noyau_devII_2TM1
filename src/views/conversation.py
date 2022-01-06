@@ -7,6 +7,7 @@
 """
 import json
 from datetime import datetime
+from main import Main
 
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
@@ -96,9 +97,9 @@ class Conversation(RelativeLayout):
         txt = self.inputs_container.ids.message_input.text
 
         if txt:
-            msg = Message(datetime.now(), txt, "Moi", self.messages_container.channel_id)
+            msg = Message(datetime.now(), txt, Main.current_user, self.messages_container.channel_id)
             print(self.messages_container.channel_id)
-            if msg.sender == "Moi":  # ici faire en sorte de récuperer l'id de l'user actuel
+            if msg.sender == Main.current_user:
                 self.messages_container.add_message(msg, pos="right")
             else:
                 self.messages_container.add_message(msg)
