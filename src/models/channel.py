@@ -25,9 +25,9 @@ class Channel:
                  chat_history=None):
         """create a new channel based on a name, an administrator, some members and a chat history"""
         """
-        PRE : channel_name and channel_admin are strings,
-         group is Group,
-         channel_members and chat_history are lists of strings
+        PRE : channel_name,channel_id and channel_admin are strings,
+                group is Group,
+                channel_members and chat_history are lists of strings
         POST : a new Channel object is created
         """
         if chat_history is None:
@@ -50,14 +50,6 @@ class Channel:
 
         except Exception as error:
             print(error)
-
-    @property
-    def id(self):
-        return self._id
-
-    @id.setter
-    def id(self, value):
-        self._id = value
 
     def send_to_db(self):
         """send the channel to the database"""
@@ -96,7 +88,7 @@ class Channel:
         self.__collection.update_one(filter=query, update=new_member)
 
     def remove_member(self, member):
-        """remove a member from the channel, it remove all the members that have the pseudo member"""
+        """remove a member from the channel, it removes all the members that have the pseudo member"""
         """
         PRE : member is a string that is in the list channel_members
         POST : all the element 'member' of the list channel_members are removed
@@ -105,7 +97,7 @@ class Channel:
         if member not in self.channel_members:
             raise ParamNotFoundException(Exception)
         self.channel_members = [i for i in self.channel_members if i != member]  # permet de supprimer chaque élément
-        # member de la liste (même si il revient plsrs fois), remove ne supprime que la premiere occurrence
+        # member de la liste (même s'il revient plusieurs fois), remove ne supprime que la premiere occurrence
         query = {"channel_name": self.channel_name}
         member_to_remove = {"$set": {
             "channel_members": self.channel_members
@@ -114,3 +106,5 @@ class Channel:
 
     def mute_group(self):
         pass
+
+

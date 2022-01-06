@@ -106,7 +106,7 @@ class ChannelsContainer(ScrollView):
     def add_new_channel(self, group_name):
         """
         Cette méthode permet d'ajouter un nouveau channel dans le groupe concerné.
-        :param group_name: Représente le nom du groupe concerné.
+        :param group_name : Représente le nom du groupe concerné.
         """
         # content est toute la popup
         content = RelativeLayout()

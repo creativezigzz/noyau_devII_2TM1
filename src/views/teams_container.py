@@ -8,9 +8,13 @@
 from kivy.lang import Builder
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import ScreenManagerException
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.textinput import TextInput
 
+from main import Main
 from src.config import config
 from src.libs.sorting.dict_sort import dict_sort
 from src.models.channel import Channel
@@ -38,7 +42,6 @@ class TeamsContainer(ScrollView):
         self.sm = ScreensManager()
         self.data_from_db = {}
         self.set_data_from_db()
-
         self.init_teams_list()
 
     def set_data_from_db(self):
@@ -57,7 +60,7 @@ class TeamsContainer(ScrollView):
                     collection_channels = connector.db["channels"]
                     for channel in collection_channels.find():
                         for i in document["channel_id"]:
-
+                            # print(str(channel["channel_id"])+ " =? "+ str(i))
                             if channel["channel_id"] == i:
                                 data = Channel(
 
@@ -69,14 +72,14 @@ class TeamsContainer(ScrollView):
                                     chat_history=None
                                 )
 
-                                print(data.id)
-                                print(data.channel_id)
+                                # print(str(data))
+                                # print(data.channel_id)
                                 self.data_from_db[document["_id"]]["channels"].append(data)
 
         except Exception as e:
             print(e)
 
-        # print(self.data_from_db)
+        print(self.data_from_db)
 
     def init_teams_list(self):
         """
@@ -102,6 +105,11 @@ class TeamsContainer(ScrollView):
                                     _name=team.name,
                                     _team=team: landing_screen.display_channels(_channels, _name, _team))
                 self.content.add_widget(channel_label)
+            button_add_team = TeamsListButton(text="Ajouter")
+            button_add_team.bind(
+                on_press=lambda a: self.add_team())
+
+            self.content.add_widget(button_add_team)
         else:
             self.content.add_widget(EmptyTeams())
 
@@ -129,3 +137,48 @@ class TeamsContainer(ScrollView):
             return list_of_teams
 
         return None
+
+    def add_team(self):
+        # content est toute la popup
+        content_popup_team = RelativeLayout()
+        team_name_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
+                                    pos_hint={'center_x': .5, 'center_y': .3})
+
+        close = Button(text="Close", size_hint=(None, None), size=(150, 40),
+                       pos_hint={'center_x': .6, 'center_y': .1})
+
+        ajouter = Button(text="Ajouter", size_hint=(None, None), size=(150, 40),
+                         pos_hint={'center_x': .4, 'center_y': .1})
+        # ajout des button, de l'input et du label a la popup
+        content_popup_team.add_widget(Label(text="Le nom de la nouvelle team"))
+        content_popup_team.add_widget(team_name_input)
+        content_popup_team.add_widget(ajouter)
+        content_popup_team.add_widget(close)
+        popup = Popup(title="Ajouter une nouvelle team ",
+                      size_hint=(.5, .5),
+                      pos_hint={'center_x': .5, 'center_y': .5},
+                      content=content_popup_team,
+                      auto_dismiss=False)
+
+        # définition des actions liée au button
+        close.bind(on_press=lambda a: popup.dismiss())
+        ajouter.bind(on_press=lambda a: self.add_team_on_db(team_name_input.text))
+        popup.open()
+
+    def add_team_on_db(self, team_name: str):
+        print(team_name)
+        new_team = {
+            "name": team_name,
+            "icon_path": "",
+            "participants": [Main.current_user],
+            "channel_id": []
+        }
+        try:
+            with MongoConnector() as connector:
+                db = connector.db
+                collection_team = db["teams"]
+                collection_team.insert_one(new_team)
+        except Exception as e:
+            print(e)
+        self.set_data_from_db()
+        self.init_teams_list()

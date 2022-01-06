@@ -21,23 +21,62 @@
         https://www.python.org/dev/peps/pep-0008/
 
 """
-from uuid import UUID
+import uuid
 
 from dotenv import load_dotenv
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.textinput import TextInput
+
+import db_delete_document
+import db_verify
 
 import src.config.config as config
-from src.models.mongo_connector import MongoConnector
 from src.models.screens_manager import ScreensManager
+from src.models.user import User
 
 load_dotenv()
 
 Builder.load_file("{0}/common.kv".format(config.VIEWS_DIR))
 
 
+def set_user(pseudo):
+    new_user: User
+    if pseudo != "":
+        new_user = User(uid=uuid.uuid4(), pseudo=pseudo, current_user=True)
+        return new_user
+    else:
+        print("erreur")
+        login()
+
+
+def login():
+    content = RelativeLayout()
+    current_user_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
+                                   pos_hint={'center_x': .5, 'center_y': .3})
+    login_button = Button(text="Login", size_hint=(None, None), size=(150, 40),
+                          pos_hint={'center_x': .4, 'center_y': .1})
+    # ajout des button, de l'input et du label a la popup
+    content.add_widget(Label(text="Votre pseudo :"))
+    content.add_widget(current_user_input)
+    content.add_widget(login_button)
+    popup = Popup(title="identifiez vous",
+                  size_hint=(.5, .5),
+                  pos_hint={'center_x': .5, 'center_y': .5},
+                  content=content,
+                  auto_dismiss=False)
+    # définition des actions liée au button
+    login_button.bind(on_press=lambda a: set_user(current_user_input.text) and popup.dismiss())
+    popup.open()
+
+
 class Main(App):
     title = 'EpheCom'
+    current_user = "Vincent"
 
     def build(self):
         from src.views.landing import LandingScreen
@@ -46,7 +85,13 @@ class Main(App):
         landing_screen = LandingScreen()
         sm.add_widget(landing_screen)
         sm.current = "landing"
-        verification_collection()
+        # Juste pour simplifier les tests sur la DB
+        # db_delete_document.delete_collection("teams")
+        # db_delete_document.delete_collection("channels")
+        # db_delete_document.delete_collection("messages")
+        # db_verify.verification_collection("teams")
+        # db_verify.verification_collection("channels")
+        # db_verify.verification_collection("messages")
         landing_screen.set_teams_list()
         return sm
 
@@ -59,207 +104,6 @@ class Personne:
 class Etudiant(Personne):
     def __init__(self, nom):
         super(Etudiant, self).__init__(nom)
-
-
-def verification_collection():
-    try:
-        with MongoConnector() as connector:
-            print(connector.db.list_collection_names())
-            # print(connector.db["messages"].find_one())
-
-            # suppression des teams en DB
-            # delete_team = connector.db["teams"].delete_many({})
-            # print(delete_team.deleted_count, " teams deleted.")
-
-            # suppression des channels en DB
-            # delete_channel = connector.db["channels"].delete_many({})
-            # print(delete_channel.deleted_count, " channels deleted.")
-
-            # suppression des messages en DB
-            # delete_messages = connector.db["messages"].delete_many({})
-            # print(delete_messages.deleted_count, " messages deleted.")
-
-            # création des collections si elles sont vides
-            if connector.db["teams"].find_one() is None:
-                print("team est vide")
-                set_collection_team()
-            if connector.db["channels"].find_one() is None:
-                print("channels est vide")
-                set_collection_channel()
-            if connector.db["messages"].find_one() is None:
-                print("messages est vide")
-                set_collection_message()
-            else:
-                print("ok data correctes")
-
-            # affichage en console des différentes collections
-            for x in connector.db["teams"].find():
-                print(x)
-            for x in connector.db["channels"].find():
-                print(x)
-            for x in connector.db["messages"].find():
-                print(x)
-
-    except Exception as e:
-        print(e)
-
-
-def set_collection_message():
-    data = [{'_id': UUID('7d7c46d1-45a8-4efa-afdd-78a87a2c9dc3'),
-             'timestamp': '2021-12-22 18:01:00.287792',
-             'msg': 'test',
-             'sender': 'Moi',
-             'is_edited': False,
-             'channel_id': 'b816ef54-7a5c-448a-972c-78267ae371c6'},
-
-            {'_id': UUID('cae144f6-2c9c-4096-a5c1-572c1807e065'),
-             'timestamp': '2021-12-22 18:01:11.343219',
-             'msg': 'pour que ça fonctionne',
-             'sender': 'Moi',
-             'is_edited': False,
-             'channel_id': 'b816ef54-7a5c-448a-972c-78267ae371c6'},
-
-            {'_id': UUID('8a8d50a0-7a69-4870-970d-810ebeed20ea'),
-             'timestamp': '2021-12-22 18:05:21.004276',
-             'msg': 'Hello bonjour',
-             'sender': 'Moi',
-             'is_edited': False,
-             'channel_id': 'b816ef54-7a5c-448a-972c-78267ae371c6'},
-
-            {'_id': UUID('4a2b4ff1-c3df-43d0-8d08-c535d15624b2'),
-             'timestamp': '2021-12-22 18:05:29.721733',
-             'msg': "Hello c'est moi",
-             'sender': 'Moi',
-             'is_edited': False,
-             'channel_id': "a11b4ee7-8743-4607-b838-acc1298a5f7a"},
-
-            {'_id': UUID('f3525263-02d9-4b75-8b23-5dfe619e95b8'),
-             'timestamp': '2021-12-23 10:35:59.314162',
-             'msg': 'test 10h35',
-             'sender': 'Moi',
-             'is_edited': False,
-             'channel_id': "a11b4ee7-8743-4607-b838-acc1298a5f7a"}]
-    try:
-        with MongoConnector() as connector:
-            db = connector.db
-            collection_messages = db["messages"]
-            collection_messages.insert_many(data)
-
-    except Exception as e:
-        print(e)
-
-
-def set_collection_team():
-    # données qui sont en Db utilisé lors de la recréation de la collection
-
-    data_teams1 = [{
-        "name": "Pis",
-        "icon_path": "",
-        "participants": [
-            "SerialMatcher",
-            "Bilou",
-            "Babar",
-            "Jacques",
-            "Vincent",
-            "Mady",
-            "Oli",
-            "Alice",
-            "Lucas",
-        ],
-        "channel_id": ["a11b4ee7-8743-4607-b838-acc1298a5f7a",
-                       "a11b4ee7-8743-4607-b838-acc1298a5fer",
-                       "a11b4ee7-8743-4607-b838-acc1298arrr",
-                       "a11b4ee7-8743-4607-b838-acc1298a5f7b"
-                       ]
-    },
-        {
-            "name": "Pan",
-            "icon_path": "",
-            "participants": [
-                "SerialMatcher",
-                "Bilou",
-                "Babar",
-                "Jacques",
-                "Vincent",
-                "Mady",
-                "Oli",
-                "Alice",
-                "Toulouse",
-                "Adrien",
-                "Bastien",
-            ],
-            "channel_id": [
-                "b816ef54-7a5c-448a-972c-78267ae371c6",
-                "b816ef54-7a5c-448a-972c-78267ae371az",
-                "b816ef54-7a5c-448a-972c-78267ae371tb",
-            ]
-        }]
-    try:
-        with MongoConnector() as connector:
-            db = connector.db
-            collection_team = db["teams"]
-            collection_team.insert_many(data_teams1)
-            # collection_team.insert_many(data_teams2)
-    except Exception as e:
-        print(e)
-
-
-def set_collection_channel():
-    data_channel = [
-        {"channel_id": "a11b4ee7-8743-4607-b838-acc1298a5f7a",
-         "name": "pis",
-         "admin": "Bilou",
-         "group": "group_test1",
-         "membres": ["SerialMatcher",
-                     "Jacques",
-                     "Alice"]},
-        {"channel_id": "a11b4ee7-8743-4607-b838-acc1298a5fer",
-         "name": "channel_de_test1",
-         "admin": "Bilou",
-         "group": "group_test1",
-         "membres": ["SerialMatcher",
-                     "Jacques",
-                     "Vincent",
-                     "Alice"]},
-        {"channel_id": "a11b4ee7-8743-4607-b838-acc1298arrr",
-         "name": "channel_de_test2",
-         "admin": "Bilou",
-         "group": "group_test2",
-         "membres": ["SerialMatcher",
-                     "Jacques"]},
-        {"channel_id": "a11b4ee7-8743-4607-b838-acc1298a5f7b",
-         "name": "channel_de_test3",
-         "admin": "Bilou",
-         "group": "group_test2",
-         "membres": ["SerialMatcher",
-                     "Jacques",
-                     "SerialMatcher"]},
-        {"channel_id": "b816ef54-7a5c-448a-972c-78267ae371c6",
-         "name": "channel_de_test1",
-         "admin": "Bilou",
-         "group": "group_test1",
-         "membres": ["SerialMatcher",
-                     "Jacques"]},
-        {"channel_id": "b816ef54-7a5c-448a-972c-78267ae371az",
-         "name": "channel_de_test2",
-         "admin": "Bilou",
-         "group": "group_test1",
-         "membres": ["SerialMatcher",
-                     "Jacques"]},
-        {"channel_id": "b816ef54-7a5c-448a-972c-78267ae371tb",
-         "name": "channel_de_test3",
-         "admin": "Bilou",
-         "group": "group_test2",
-         "membres": ["SerialMatcher",
-                     "Babar"]}
-    ]
-    try:
-        with MongoConnector() as connector:
-            db = connector.db
-            collection_channel = db["channels"]
-            collection_channel.insert_many(data_channel)
-    except Exception as e:
-        print(e)
 
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@
 
 
 class User:
-    def __init__(self, uid, firstname, lastname):
+    def __init__(self, uid, pseudo, current_user: bool):
         self.uid = uid
-        self.firstname = firstname
-        self.lastname = lastname
+        self.pseudo = pseudo
+        self.is_current_user = current_user
