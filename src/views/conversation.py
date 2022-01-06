@@ -59,9 +59,14 @@ class ConversationContainer(ScrollView):
                 collection = connector.db["messages"].find()
                 for document in collection:
                     if document['channel_id'] == channel_id:
-                        msg = MessageSent(
-                            text=document["timestamp"] + " - " + document["sender"] + "\n" + document["msg"])
-                        self.messages_box.add_widget(msg, len(self.messages_box.children))
+                        if document["sender"] == Main.current_user:
+                            msg = MessageSent(
+                                text=document["timestamp"] + " - " + document["sender"] + "\n" + document["msg"])
+                            self.messages_box.add_widget(msg, len(self.messages_box.children))
+                        else:
+                            msg = MessageReceived(
+                                text=document["timestamp"] + " - " + document["sender"] + "\n" + document["msg"])
+                            self.messages_box.add_widget(msg, len(self.messages_box.children))
         except Exception as e:
             print(e)
 
@@ -100,12 +105,14 @@ class Conversation(RelativeLayout):
             msg = Message(datetime.now(), txt, Main.current_user, self.messages_container.channel_id)
             print(self.messages_container.channel_id)
             if msg.sender == Main.current_user:
+                print("right")
                 self.messages_container.add_message(msg, pos="right")
             else:
                 self.messages_container.add_message(msg)
             msg.send_to_db()
 
             if txt[0] == "/":
+                print("right")
                 bot = Commands(txt)
                 response_from_bot = bot.result
                 msg_res = Message(datetime.now(), response_from_bot, "E-Bot")

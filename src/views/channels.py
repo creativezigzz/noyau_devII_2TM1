@@ -55,7 +55,6 @@ class ChannelsContainer(ScrollView):
         """
         super(ChannelsContainer, self).__init__()
         self.channels_list = channels_list_obj
-        print(self.channels_list)
         self.team_object = team
         self.channels_container = self.ids.channels_content
         self.sm = ScreensManager()
@@ -74,9 +73,13 @@ class ChannelsContainer(ScrollView):
             return None
 
     def generate_list_rows(self):
-        """génerate the list of groups and channles"""
+        """generate the list of groups and channels"""
         self.channels_container.clear_widgets()
         groups = {}
+        print(self.channels_list)
+        print(self.channels_list)
+        print(self.channels_list)
+        print(self.channels_list)
         for channel in self.channels_list:
             group_name = channel.group.name
 
@@ -215,12 +218,13 @@ class ChannelsContainer(ScrollView):
 
 
 class ParticipantContainer(ScrollView):
-    def __init__(self, member_list, channel, team):
+    def __init__(self, member_list, channel, team, display_team_member: bool):
         """create the container who contains all the user in the current channel"""
         """
         PRE : member_list is list, channel is Channel object, team is strings
         """
         super(ParticipantContainer, self).__init__()
+        self.display_team_member = display_team_member
         self.content = self.ids.member_content
         self.membres_list = member_list
         self.channel = channel
@@ -247,7 +251,10 @@ class ParticipantContainer(ScrollView):
             member_label = MembersListButton(text=member)
             self.content.add_widget(member_label)
         add_button_label = MembersListButton(text="Ajouter")
-        add_button_label.bind(on_press=lambda a: self.add_member_to_channel("test"))
+        if not self.display_team_member:
+            add_button_label.bind(on_press=lambda a: self.add_member_to_channel("test"))
+        else:
+            add_button_label.bind(on_press=lambda a: self.add_member_to_team("test"))
         self.content.add_widget(add_button_label)
 
     def add_member_to_channel(self, member_pseudo: str):
@@ -257,43 +264,6 @@ class ParticipantContainer(ScrollView):
         """
         self.channel.add_member(member_pseudo)
         self.init_member_list()
-
-
-# a modifier pour que la liste des membres de la team s'affiche lors d'un click sur le nom de team
-class ParticipantTeamContainer(ScrollView):
-    def __init__(self, member_list, team):
-        """create the container for display the members of the current team"""
-        """
-        PRE : member_list is list, team is strings
-        """
-        super(ParticipantTeamContainer, self).__init__()
-        self.content = self.ids.team_member_content
-        self.membres_list = member_list
-        self.team = team
-        self.init_member_list()
-        self.sm = ScreensManager()
-        self.landing_screen = self.get_landing_screen()
-
-    def get_landing_screen(self):
-        """get the landing screen"""
-        """
-        POST : return the landing_screen
-        """
-        try:
-            landing_screen = self.sm.get_screen("landing")
-            return landing_screen
-        except ScreenManagerException:
-            return None
-
-    def init_member_list(self):
-        """set the member list of the current team"""
-        self.content.clear_widgets()
-        for member in self.membres_list:
-            member_label = MembersListButton(text=member)
-            self.content.add_widget(member_label)
-        add_button_label = MembersListButton(text="Ajouter")
-        add_button_label.bind(on_press=lambda a: self.add_member_to_team("Test_Add_User_Team"))
-        self.content.add_widget(add_button_label)
 
     def add_member_to_team(self, member_pseudo: str):
         """add a new membre in the channel and update data on DB"""

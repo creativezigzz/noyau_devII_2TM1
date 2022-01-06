@@ -15,12 +15,11 @@ from kivy.uix.screenmanager import Screen
 
 from src.config import config
 from src.models.channel import Channel
-from src.models.mongo_connector import MongoConnector
 from src.models.screens_manager import ScreensManager
 from src.models.team import Team
 from src.views.conversation import Conversation
 from src.views.teams_container import TeamsContainer
-from src.views.channels import ChannelsContainer, ParticipantContainer, ParticipantTeamContainer
+from src.views.channels import ChannelsContainer, ParticipantContainer
 
 Builder.load_file("{0}/header.kv".format(config.VIEWS_DIR))
 Builder.load_file("{0}/landing.kv".format(config.VIEWS_DIR))
@@ -41,7 +40,7 @@ class LandingScreen(Screen):
         """
             [Base]
             Gestion des évènements de redirection du Screen.
-            :param href: Le nom du Screen vers lequel naviguer.
+            :param href : Le nom du Screen vers lequel naviguer.
         """
         self.sm.redirect(href)
 
@@ -49,8 +48,8 @@ class LandingScreen(Screen):
         """
             [Base]
             Permet la mise à jour de la liste des "Channel" après un clic sur le nom d'une "Team".
-            :param channels_current_team: Liste des 'Channel' de la "Team" concernée.
-            :param team: l'objet Team concernant la team actuellement utilisée
+            :param channels_current_team : Liste des 'Channel' de la "Team" concernée.
+            :param team : l'objet Team concernant la team actuellement utilisée
         """
         self.conv_box.clear_widgets()
         self.participant_box.clear_widgets()
@@ -70,12 +69,12 @@ class LandingScreen(Screen):
     def display_participant_channel(self, member_list: list, channel: list, team: list):
         """
             Permet la mise à jour des participants du channel après un clic sur le nom d'un "Channel".
-            :param member_list: La liste des membres du channel
-            :param channel: La liste des channels
-            :param team: La team
+            :param member_list : La liste des membres du channel
+            :param channel : La liste des channels
+            :param team : La team
         """
         self.participant_box.clear_widgets()
-        member = ParticipantContainer(member_list, channel, team)
+        member = ParticipantContainer(member_list, channel, team, display_team_member=False)
         self.participant_box.add_widget(member)
 
     def set_teams_list(self):
@@ -86,13 +85,13 @@ class LandingScreen(Screen):
         self.teams_container = TeamsContainer()
         self.team_box.add_widget(self.teams_container)
 
-# peut être a supprimé
-    def display_participant_team(self, member_list: list, team: list):
+    # peut-être a supprimé
+    def display_participant_team(self, team: Team):
         """
             Permet la mise à jour des participants de la team après un clic sur le nom d'une team.
             :param member_list : La liste des membres de la team
             :param team : La team
         """
         self.participant_box.clear_widgets()
-        member = ParticipantTeamContainer(member_list, team)
+        member = ParticipantContainer(member_list=team.participants, channel=None, team=team, display_team_member=True)
         self.participant_box.add_widget(member)

@@ -81,7 +81,7 @@ class TeamsContainer(ScrollView):
         except Exception as e:
             print(e)
 
-        print(self.data_from_db)
+        # print(self.data_from_db)
 
     def init_teams_list(self):
         """
@@ -92,19 +92,13 @@ class TeamsContainer(ScrollView):
         """
         self.content.clear_widgets()
         teams_list = self.get_teams_list()
-        landing_screen = None
-        try:
-            landing_screen = self.sm.get_screen("landing")
-        except ScreenManagerException:
-            pass
 
         if teams_list:
             for team in teams_list:
                 channel_label = TeamsListButton(text=team.name)
                 channel_label.bind(
-                    on_press=lambda a,
-                                    _channels=team.channels,
-                                    _team=team: landing_screen.display_channels(_channels, _team))
+                    on_press=lambda a, _channels=team.channels, _team=team: self.display_landing_screen(_channels,
+                                                                                                        _team))
                 self.content.add_widget(channel_label)
             button_add_team = TeamsListButton(text="Ajouter")
             button_add_team.bind(
@@ -114,11 +108,19 @@ class TeamsContainer(ScrollView):
         else:
             self.content.add_widget(EmptyTeams())
 
+    def display_landing_screen(self, channels, team: Team):
+        try:
+            landing_screen = self.sm.get_screen("landing")
+        except ScreenManagerException:
+            landing_screen = None
+        landing_screen.display_channels(channels, team)
+        landing_screen.display_participant_team(team)
+
     def get_teams_list(self):
         """
             [BASE]
             Récupère la liste des "Team" depuis la banque de données.
-            :return: list : La liste des "Team" (objets) auxquels l'utilisateur appartient, triés par leurs noms.
+            :return : list : La liste des "Team" (objets) auxquels l'utilisateur appartient, triés par leurs noms.
         """
 
         list_of_teams = []
@@ -150,7 +152,7 @@ class TeamsContainer(ScrollView):
 
     def add_team(self):
 
-        # content est toute la popup
+        # content est tout le popup
         content_popup_team = RelativeLayout()
         team_name_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
                                     pos_hint={'center_x': .5, 'center_y': .3})
@@ -160,7 +162,7 @@ class TeamsContainer(ScrollView):
 
         ajouter = Button(text="Ajouter", size_hint=(None, None), size=(150, 40),
                          pos_hint={'center_x': .4, 'center_y': .1})
-        # ajout des button, de l'input et du label a la popup
+        # ajout des button, de l'input et du label au popup
         content_popup_team.add_widget(Label(text="Le nom de la nouvelle team"))
         content_popup_team.add_widget(team_name_input)
         content_popup_team.add_widget(ajouter)
