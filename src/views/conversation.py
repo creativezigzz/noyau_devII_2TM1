@@ -76,8 +76,7 @@ class ConversationContainer(ScrollView):
         msg = MessageSent()
 
         if pos == "right":
-            msg = MessageReceived()
-
+            msg = MessageReceived()  # ici
         msg.text = str(msg_obj.timestamp) + " - " + msg_obj.sender + "\n" + msg_obj.msg
         self.messages_box.add_widget(msg, len(self.messages_box.children))
 
@@ -99,7 +98,10 @@ class Conversation(RelativeLayout):
         if txt:
             msg = Message(datetime.now(), txt, "Moi", self.messages_container.channel_id)
             print(self.messages_container.channel_id)
-            self.messages_container.add_message(msg)
+            if msg.sender == "Moi":  # ici faire en sorte de récuperer l'id de l'user actuel
+                self.messages_container.add_message(msg, pos="right")
+            else:
+                self.messages_container.add_message(msg)
             msg.send_to_db()
 
             if txt[0] == "/":
