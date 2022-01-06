@@ -84,10 +84,10 @@ class Main(App):
         sm.add_widget(landing_screen)
         sm.current = "landing"
         # Juste pour simplifier les tests sur la DB
-        # db_delete_document.delete_collection("teams")
+        db_delete_document.delete_collection("teams")
         # db_delete_document.delete_collection("channels")
         # db_delete_document.delete_collection("messages")
-        # db_verify.verification_collection("teams")
+        db_verify.verification_collection("teams")
         # db_verify.verification_collection("channels")
         # db_verify.verification_collection("messages")
         landing_screen.set_teams_list()

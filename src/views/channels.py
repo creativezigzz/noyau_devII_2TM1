@@ -17,6 +17,7 @@ from kivy.uix.screenmanager import ScreenManagerException
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
 
+from main import Main
 from src.config import config
 from src.models.channel import Channel
 from src.models.group import Group
@@ -47,14 +48,14 @@ class MembersListButton(Button):
 
 
 class ChannelsContainer(ScrollView):
-    def __init__(self, channels_list_id: list, team_name: str, team: Team):
+    def __init__(self, channels_list_obj: list, team: Team):
         """display the member-box and the messages-box"""
         """
         PRE : membres is list of strings, channel is Channel, team and id_channel are string
         """
         super(ChannelsContainer, self).__init__()
-        self.channels_list = channels_list_id
-        self.team_name = team_name
+        self.channels_list = channels_list_obj
+        print(self.channels_list)
         self.team_object = team
         self.channels_container = self.ids.channels_content
         self.sm = ScreensManager()
@@ -94,6 +95,28 @@ class ChannelsContainer(ScrollView):
                                                   self.display_landing_screen(_membres, _channel, self.team_object)
                                                   )
             groups[group_name].add_widget(channel_name_row)
+        # vérification de si il existe des groupes sans channels
+        for group_name in self.team_object.group_names:
+            if group_name not in groups:
+                group = BoxLayout(orientation="vertical", size_hint_y=None)
+                title_row = GroupTitleRow()
+                title_label = GroupLabel(text=group_name)
+                title_add_btn = GroupAddButton(on_press=lambda a, _grp=group_name: self.add_new_channel(_grp))
+                title_row.add_widget(title_label)
+                title_row.add_widget(title_add_btn)
+                group.add_widget(title_row)
+                self.channels_container.add_widget(group)
+                groups[group_name] = group
+        # Ajout de la possibilité d'ajouter un groupe si on est admin de la team
+        if self.team_object.is_admin_team(Main.current_user):
+            group_add = BoxLayout(orientation="vertical", size_hint_y=None)
+            title_row = GroupTitleRow()
+            title_label = GroupLabel(text="new groupe")
+            title_add_btn = GroupAddButton(on_press=lambda a: self.add_new_group())
+            title_row.add_widget(title_label)
+            title_row.add_widget(title_add_btn)
+            group_add.add_widget(title_row)
+            self.channels_container.add_widget(group_add)
 
     def display_landing_screen(self, membres, channel, team):
         """display the member-box and the messages-box"""
@@ -102,6 +125,34 @@ class ChannelsContainer(ScrollView):
         """
         self.landing_screen.display_participant_channel(membres, channel, team)
         self.landing_screen.display_conversation(channel)
+
+    def add_new_group(self):
+        print("nouveau groupe")
+        content = RelativeLayout()
+        group_name_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
+                                     pos_hint={'center_x': .5, 'center_y': .3})
+
+        cancel = Button(text="Annuler", size_hint=(None, None), size=(150, 40),
+                        pos_hint={'center_x': .6, 'center_y': .1})
+
+        ajouter = Button(text="Ajouter", size_hint=(None, None), size=(150, 40),
+                         pos_hint={'center_x': .4, 'center_y': .1})
+        # ajout des button, de l'input et du label a la popup
+        content.add_widget(Label(text="Le nom du nouveau group"))
+        content.add_widget(group_name_input)
+        content.add_widget(ajouter)
+        content.add_widget(cancel)
+        popup = Popup(title="Ajouter un nouveau groupe à la team {0}".format(self.team_object.name),
+                      size_hint=(.5, .5),
+                      pos_hint={'center_x': .5, 'center_y': .5},
+                      content=content,
+                      auto_dismiss=False)
+
+        # définition des actions liée au button
+        cancel.bind(on_press=lambda a: popup.dismiss())
+        ajouter.bind(
+            on_press=lambda a: self.add_new_group_on_db(group_name_input.text) and popup.dismiss())
+        popup.open()
 
     def add_new_channel(self, group_name):
         """
@@ -153,10 +204,19 @@ class ChannelsContainer(ScrollView):
         team.add_channel_to_current_team(new_channel)
         self.generate_list_rows()
 
+    def add_new_group_on_db(self, new_group_name: str):
+        """create a new channel into the Db (into channel collection and into team collection) """
+        """
+        PRE : team is an Team object , channel is an Channel object
+        """
+        print(new_group_name)
+        self.team_object.add_group(new_group_name)
+        self.generate_list_rows()
+
 
 class ParticipantContainer(ScrollView):
     def __init__(self, member_list, channel, team):
-        """create the container who contains all of the user in the current channel"""
+        """create the container who contains all the user in the current channel"""
         """
         PRE : member_list is list, channel is Channel object, team is strings
         """

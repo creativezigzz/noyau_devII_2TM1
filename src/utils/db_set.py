@@ -52,6 +52,8 @@ data_teams = [{
         "Alice",
         "Lucas",
     ],
+    "admin_team": ["Vincent", "Mady"],
+    "group_names": ["group_test1", "group_test2", "group_vide"],
     "channel_id": ["a11b4ee7-8743-4607-b838-acc1298a5f7a",
                    "a11b4ee7-8743-4607-b838-acc1298a5fer",
                    "a11b4ee7-8743-4607-b838-acc1298arrr",
@@ -74,6 +76,8 @@ data_teams = [{
             "Adrien",
             "Bastien",
         ],
+        "admin_team": ["Alice", "Oli"],
+        "group_names": ["group_test1", "group_test2"],
         "channel_id": [
             "b816ef54-7a5c-448a-972c-78267ae371c6",
             "b816ef54-7a5c-448a-972c-78267ae371az",

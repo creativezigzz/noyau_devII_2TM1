@@ -54,6 +54,8 @@ class TeamsContainer(ScrollView):
                     self.data_from_db[document["_id"]] = {
                         "name": document["name"],
                         "icon_path": "",
+                        "group_names": document["group_names"],
+                        "admin_team": document["admin_team"],
                         "participants": document["participants"],
                         "channels": []
                     }
@@ -102,8 +104,7 @@ class TeamsContainer(ScrollView):
                 channel_label.bind(
                     on_press=lambda a,
                                     _channels=team.channels,
-                                    _name=team.name,
-                                    _team=team: landing_screen.display_channels(_channels, _name, _team))
+                                    _team=team: landing_screen.display_channels(_channels, _team))
                 self.content.add_widget(channel_label)
             button_add_team = TeamsListButton(text="Ajouter")
             button_add_team.bind(
@@ -131,14 +132,24 @@ class TeamsContainer(ScrollView):
                 name = data_from_db[team_id]["name"]
                 icon_path = data_from_db[team_id]["icon_path"]
                 participants = data_from_db[team_id]["participants"]
+                group_names = data_from_db[team_id]["group_names"]
+                admin_team = data_from_db[team_id]["admin_team"]
                 channels = data_from_db[team_id]["channels"]
-                inst = Team(team_id, name, channels, icon_path=icon_path, participants=participants)
-                list_of_teams.append(inst)
+                inst = Team(identifier=team_id,
+                            name=name,
+                            channels=channels,
+                            group_names=group_names,
+                            admin_team=admin_team,
+                            icon_path=icon_path,
+                            participants=participants)
+                if inst.is_member_team(Main.current_user):
+                    list_of_teams.append(inst)
             return list_of_teams
 
         return None
 
     def add_team(self):
+
         # content est toute la popup
         content_popup_team = RelativeLayout()
         team_name_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
@@ -166,7 +177,9 @@ class TeamsContainer(ScrollView):
         popup.open()
 
     def add_team_on_db(self, team_name: str):
-        print(team_name)
+        """
+        Ajoute une nouvelle team dans la collection "teams" de la db dont le seul participant est le current_user
+        """
         new_team = {
             "name": team_name,
             "icon_path": "",

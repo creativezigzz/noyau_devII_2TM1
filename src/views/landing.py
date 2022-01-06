@@ -45,18 +45,17 @@ class LandingScreen(Screen):
         """
         self.sm.redirect(href)
 
-    def display_channels(self, channels_current_team: list, team_name: str, team: Team):
+    def display_channels(self, channels_current_team: list, team: Team):
         """
             [Base]
             Permet la mise à jour de la liste des "Channel" après un clic sur le nom d'une "Team".
             :param channels_current_team: Liste des 'Channel' de la "Team" concernée.
-            :param team_name: Nom de la "Team" concernée.
             :param team: l'objet Team concernant la team actuellement utilisée
         """
         self.conv_box.clear_widgets()
         self.participant_box.clear_widgets()
         self.rooms_box.clear_widgets()
-        self.rooms_box.add_widget(ChannelsContainer(channels_current_team, team_name, team))
+        self.rooms_box.add_widget(ChannelsContainer(channels_current_team, team))
 
     def display_conversation(self, channel: Channel):
         """
@@ -90,7 +89,7 @@ class LandingScreen(Screen):
 # peut être a supprimé
     def display_participant_team(self, member_list: list, team: list):
         """
-            Permet la mise à jour des participants du channel après un clic sur le nom d'un "Channel".
+            Permet la mise à jour des participants de la team après un clic sur le nom d'une team.
             :param member_list : La liste des membres de la team
             :param team : La team
         """

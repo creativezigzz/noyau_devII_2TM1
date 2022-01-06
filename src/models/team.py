@@ -10,10 +10,13 @@ from src.models.mongo_connector import MongoConnector
 
 
 class Team:
-    def __init__(self, identifier, name, channels, icon_path=None, participants=None):
+    def __init__(self, identifier: str, name: str, group_names: list, admin_team: list, channels: list, icon_path=None,
+                 participants=None):
         self.identifier = identifier
         self.name = name
         self.channels = channels
+        self.group_names = group_names
+        self.admin_team = admin_team
         self.icon_path = icon_path
         self.participants = participants
         try:
@@ -76,3 +79,40 @@ class Team:
             "participants": self.participants
         }}
         self.__collection.update_one(filter=query, update=new_member)
+
+    def add_group(self, new_group_name):
+        """add a new group to the team"""
+        """
+        PRE : member is a string
+        POST : member is added to the list of members of the channel
+        """
+        # ajout du participant dans la liste contenue dans l'objet Team
+        self.group_names.append(new_group_name)
+        # update dans la DB
+        query = {"name": self.name}
+        new_group_list = {"$set": {
+            "group_names": self.group_names
+        }}
+        self.__collection.update_one(filter=query, update=new_group_list)
+
+    def is_admin_team(self, membre):
+        """vérifie si un user est un admin de la team"""
+        """
+        PRE : membre is a string
+        """
+        is_admin = False
+        for i in self.admin_team:
+            if membre == i:
+                is_admin = True
+        return is_admin
+
+    def is_member_team(self, membre):
+        """vérifie si un user est un membre de la team"""
+        """
+        PRE : membre is a string
+        """
+        is_member = False
+        for i in self.participants:
+            if membre == i:
+                is_member = True
+        return is_member
