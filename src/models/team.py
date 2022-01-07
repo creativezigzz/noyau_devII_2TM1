@@ -12,6 +12,11 @@ from src.models.mongo_connector import MongoConnector
 class Team:
     def __init__(self, identifier: str, name: str, group_names: list, admin_team: list, channels: list, icon_path=None,
                  participants=None):
+        """create a new class object"""
+        """
+        PRE : identifier and name are strings, group_names, admin_team and channels are lists.
+        POST : a new team object is created
+        """
         self.identifier = identifier
         self.name = name
         self.channels = channels
