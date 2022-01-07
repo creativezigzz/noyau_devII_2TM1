@@ -5,7 +5,6 @@
     [BASE]
     Ce fichier représente une zone de conversation.
 """
-import json
 from datetime import datetime
 from main import Main
 
@@ -58,7 +57,7 @@ class ConversationContainer(ScrollView):
             with MongoConnector() as connector:
                 collection = connector.db["messages"].find()
                 for document in collection:
-                    if document['channel_id'] == channel_id:
+                    if document['channel_id'] is not None and document['channel_id'] == channel_id:
                         if document["sender"] == Main.current_user:
                             msg = MessageSent(
                                 text=document["timestamp"] + " - " + document["sender"] + "\n" + document["msg"])
@@ -88,10 +87,13 @@ class ConversationContainer(ScrollView):
 
 
 class Conversation(RelativeLayout):
-    def __init__(self, channel):
+    def __init__(self, channel, private_conversation):
         super(Conversation, self).__init__()
-        print(channel.channel_id)
-        self.messages_container = ConversationContainer(channel.channel_id)
+        if channel is None:
+            self.messages_container = ConversationContainer(private_conversation.messages)
+        if private_conversation is None:
+            print(channel.channel_id)
+            self.messages_container = ConversationContainer(channel.channel_id)
         # self.messages_container = ConversationContainer(channel._id)
         self.inputs_container = InputsContainer()
 
@@ -103,16 +105,14 @@ class Conversation(RelativeLayout):
 
         if txt:
             msg = Message(datetime.now(), txt, Main.current_user, self.messages_container.channel_id)
-            print(self.messages_container.channel_id)
+            # print(self.messages_container.channel_id)
             if msg.sender == Main.current_user:
-                print("right")
                 self.messages_container.add_message(msg, pos="right")
             else:
                 self.messages_container.add_message(msg)
             msg.send_to_db()
 
             if txt[0] == "/":
-                print("right")
                 bot = Commands(txt)
                 response_from_bot = bot.result
                 msg_res = Message(datetime.now(), response_from_bot, "E-Bot")

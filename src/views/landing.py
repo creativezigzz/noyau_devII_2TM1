@@ -15,9 +15,11 @@ from kivy.uix.screenmanager import Screen
 
 from src.config import config
 from src.models.channel import Channel
+from src.models.private_messages import PrivateConversation
 from src.models.screens_manager import ScreensManager
 from src.models.team import Team
 from src.views.conversation import Conversation
+from src.views.private_conversation import PrivateConversationContainer
 from src.views.teams_container import TeamsContainer
 from src.views.channels import ChannelsContainer, ParticipantContainer
 
@@ -56,14 +58,15 @@ class LandingScreen(Screen):
         self.rooms_box.clear_widgets()
         self.rooms_box.add_widget(ChannelsContainer(channels_current_team, team))
 
-    def display_conversation(self, channel: Channel):
+    def display_conversation(self, channel: Channel, private_conversation: PrivateConversation):
         """
             [Base]
             Permet la mise à jour de la conversation active après un clic sur le nom d'un "Channel".
-            :param channel : la référence de l'objet channel dont cherche à afficher les messages
+            :param channel : l'objet Channel dont cherche à afficher les messages
+            :param private_conversation : l'objet PrivateConversation dont cherche à afficher les messages
         """
         self.conv_box.clear_widgets()
-        conversation = Conversation(channel)
+        conversation = Conversation(channel, private_conversation)
         self.conv_box.add_widget(conversation)
 
     def display_participant_channel(self, member_list: list, channel: list, team: list):
@@ -74,7 +77,9 @@ class LandingScreen(Screen):
             :param team : La team
         """
         self.participant_box.clear_widgets()
-        member = ParticipantContainer(member_list, channel, team, display_team_member=False)
+        member = ParticipantContainer(member_list, channel, team, display_channels_member=True,
+                                      conversation=None,
+                                      display_team_member=False)
         self.participant_box.add_widget(member)
 
     def set_teams_list(self):
@@ -89,9 +94,24 @@ class LandingScreen(Screen):
     def display_participant_team(self, team: Team):
         """
             Permet la mise à jour des participants de la team après un clic sur le nom d'une team.
-            :param member_list : La liste des membres de la team
             :param team : La team
         """
         self.participant_box.clear_widgets()
-        member = ParticipantContainer(member_list=team.participants, channel=None, team=team, display_team_member=True)
+        member = ParticipantContainer(member_list=team.participants, channel=None, team=team,
+                                      conversation=None,
+                                      display_channels_member=False, display_team_member=True)
+        self.participant_box.add_widget(member)
+
+    def display_private_conversation(self):
+        self.conv_box.clear_widgets()
+        self.participant_box.clear_widgets()
+        self.rooms_box.clear_widgets()
+        self.rooms_box.add_widget(PrivateConversationContainer())
+        print("afficher les conversation privées")
+
+    def display_participant_conversation(self, conversation):
+        self.participant_box.clear_widgets()
+        member = ParticipantContainer(member_list=conversation.members, channel=None, team=None,
+                                      conversation=conversation,
+                                      display_channels_member=False, display_team_member=True)
         self.participant_box.add_widget(member)

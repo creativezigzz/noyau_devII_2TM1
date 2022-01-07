@@ -92,13 +92,16 @@ class TeamsContainer(ScrollView):
         """
         self.content.clear_widgets()
         teams_list = self.get_teams_list()
-
+        private_conversation = TeamsListButton(text="privé")
+        private_conversation.bind(
+            on_press=lambda a: self.display_landing_screen_private_conversation())
+        self.content.add_widget(private_conversation)
         if teams_list:
             for team in teams_list:
                 channel_label = TeamsListButton(text=team.name)
                 channel_label.bind(
-                    on_press=lambda a, _channels=team.channels, _team=team: self.display_landing_screen(_channels,
-                                                                                                        _team))
+                    on_press=lambda a, _channels=team.channels, _team=team: self.display_landing_screen_team(_channels,
+                                                                                                             _team))
                 self.content.add_widget(channel_label)
             button_add_team = TeamsListButton(text="Ajouter")
             button_add_team.bind(
@@ -108,13 +111,20 @@ class TeamsContainer(ScrollView):
         else:
             self.content.add_widget(EmptyTeams())
 
-    def display_landing_screen(self, channels, team: Team):
+    def display_landing_screen_team(self, channels, team: Team):
         try:
             landing_screen = self.sm.get_screen("landing")
         except ScreenManagerException:
             landing_screen = None
         landing_screen.display_channels(channels, team)
         landing_screen.display_participant_team(team)
+
+    def display_landing_screen_private_conversation(self):
+        try:
+            landing_screen = self.sm.get_screen("landing")
+        except ScreenManagerException:
+            landing_screen = None
+        landing_screen.display_private_conversation()
 
     def get_teams_list(self):
         """

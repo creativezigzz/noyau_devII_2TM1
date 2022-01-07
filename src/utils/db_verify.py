@@ -21,6 +21,8 @@ def verification_collection(collection_name: str):
                     db_set.set_collection_message()
                 if collection_name == "channels":
                     db_set.set_collection_channel()
+                if collection_name == "private_messages":
+                    db_set.set_collection_private_messages()
             else:
                 print("ok collection " + collection_name + " is not empty")
 
