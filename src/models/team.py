@@ -43,8 +43,8 @@ class Team:
     def add_channel_to_current_team(self, new_channel: Channel):
         """add a new channel to the team"""
         """
-        PRE : new_channel is an Channel Object
-        POST : new_channel's id is added to the list of the channel ids
+        PRE : new_channel is a Channel Object
+        POST : new_channel's id is added to the list of the channel ids, new_channel is added on db
         """
         # ajout de l'objet Channel dans la liste des channels
         self.channels.append(new_channel)
@@ -52,6 +52,11 @@ class Team:
         self.add_channel_on_db(new_channel.channel_id)
 
     def add_channel_on_db(self, channel_id):
+        """add a channel to the db"""
+        """
+        PRE : channel_id is a string (the id of a channel object)
+        POST : a new channel is added to the db
+        """
         # construction d'une nouvelle liste d'id_channel
         new_channel_list = []
         for i in self.channels:
@@ -96,9 +101,10 @@ class Team:
         self.__collection.update_one(filter=query, update=new_group_list)
 
     def is_admin_team(self, membre):
-        """vérifie si un user est un admin de la team"""
+        """Check if the user is an admin of the team"""
         """
         PRE : membre is a string
+        POST : return a boolean: True if the user is an admin of the team, else false
         """
         is_admin = False
         for i in self.admin_team:
@@ -107,9 +113,10 @@ class Team:
         return is_admin
 
     def is_member_team(self, membre):
-        """vérifie si un user est un membre de la team"""
+        """Check if the user is a mamber of the team"""
         """
         PRE : membre is a string
+        POST : return a boolean: True if the user is a member of the team, else false
         """
         is_member = False
         for i in self.participants:
