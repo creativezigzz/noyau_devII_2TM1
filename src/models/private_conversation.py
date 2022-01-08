@@ -10,12 +10,16 @@ class PrivateConversation:
         self.members = members
         self.last_message = last_message
         self.messages = []
-        self.get_message_from_db()
+        self.get_messages_from_db()
         try:
             with MongoConnector() as connector:
                 self.__collection = connector.db["private_messages"]
         except Exception as error:
             print(error)
+
+    @property
+    def identifier(self):
+        return self._id
 
     def add_member(self, new_member):
         # ajout dans l'objet
@@ -35,7 +39,7 @@ class PrivateConversation:
         }}
         self.__collection.update_one(filter=query, update=new_last_message)
 
-    def get_message_from_db(self):
+    def get_messages_from_db(self):
         try:
             with MongoConnector() as connector:
                 collection_messages = connector.db["messages"]
@@ -45,3 +49,7 @@ class PrivateConversation:
                             self.messages.append(message)
         except Exception as error:
             print(error)
+
+    def update_messages_from_db(self):
+        self.messages = []
+        self.get_messages_from_db()

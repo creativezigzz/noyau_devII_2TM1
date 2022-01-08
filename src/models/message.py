@@ -16,7 +16,7 @@ import uuid
 
 class Message:
 
-    def __init__(self, timestamp, msg, sender, channel_id, is_edited=False):
+    def __init__(self, timestamp, msg, sender, channel_id,conversation_id, is_edited=False):
         """create a new Message object"""
         """
         PRE : timestamp is a datetime object, msg, sender and channel_id are string
@@ -28,6 +28,7 @@ class Message:
         self.is_edited = is_edited
         self._id = uuid.uuid4()
         self.channel_id = channel_id
+        self.conversation_id = conversation_id
 
         try:
             with MongoConnector() as connector:
@@ -47,7 +48,8 @@ class Message:
             "msg": self.msg,
             "sender": self.sender,
             "is_edited": self.is_edited,
-            "channel_id": self.channel_id
+            "channel_id": self.channel_id,
+            "conversation_id": str(self.conversation_id)
         }
 
     def send_to_db(self):
@@ -64,6 +66,7 @@ class Message:
         #
         # with open(conv_file_path, 'w') as outfile:
         #     json.dump(conv, outfile)
+        print(self.db_formatting())
         self.__collection.insert_one(self.db_formatting())
 
     def update_msg(self, new_msg):

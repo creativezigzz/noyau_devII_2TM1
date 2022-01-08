@@ -15,11 +15,11 @@ from kivy.uix.screenmanager import Screen
 
 from src.config import config
 from src.models.channel import Channel
-from src.models.private_messages import PrivateConversation
+from src.models.private_conversation import PrivateConversation
 from src.models.screens_manager import ScreensManager
 from src.models.team import Team
 from src.views.conversation import Conversation
-from src.views.private_conversation import PrivateConversationContainer
+from src.views.private_conversation_container import PrivateConversationContainer
 from src.views.teams_container import TeamsContainer
 from src.views.channels import ChannelsContainer, ParticipantContainer
 
@@ -58,7 +58,7 @@ class LandingScreen(Screen):
         self.rooms_box.clear_widgets()
         self.rooms_box.add_widget(ChannelsContainer(channels_current_team, team))
 
-    def display_conversation(self, channel: Channel, private_conversation: PrivateConversation):
+    def display_conversation(self, channel, private_conversation):
         """
             [Base]
             Permet la mise à jour de la conversation active après un clic sur le nom d'un "Channel".

@@ -23,7 +23,7 @@ from main import Main
 from src.config import config
 from src.models.channel import Channel
 from src.models.group import Group
-from src.models.private_messages import PrivateConversation
+from src.models.private_conversation import PrivateConversation
 from src.models.screens_manager import ScreensManager
 from src.models.team import Team
 
@@ -216,7 +216,7 @@ class ChannelsContainer(ScrollView):
 
 
 class ParticipantContainer(ScrollView):
-    def __init__(self, member_list, channel: Channel, team: Team, conversation: PrivateConversation,
+    def __init__(self, member_list, channel, team, conversation,
                  display_team_member: bool, display_channels_member: bool):
         """create the container who contains all the user in the current channel"""
         """

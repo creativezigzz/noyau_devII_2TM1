@@ -40,19 +40,23 @@ class MessageReceived(MessageLabel):
 
 class ConversationContainer(ScrollView):
 
-    def __init__(self, channel_id):
+    def __init__(self, channel_id, private_conversation):
         super(ConversationContainer, self).__init__()
         self.channel_id = channel_id
+        self.private_conversation = private_conversation
         self.messages_box = self.ids.messages_container
 
         # Démarrer la mise à jour régulière de la conversation
-        self.constant_update(channel_id)
+        self.constant_update()
 
-    def constant_update(self, channel_id):
-        self.init_conversation(channel_id)
+    def constant_update(self):
+        if self.private_conversation is None:
+            self.init_conversation_channels(self.channel_id)
+        if self.channel_id is None:
+            self.init_conversation_private(self.private_conversation)
         # time.sleep(1)
 
-    def init_conversation(self, channel_id):
+    def init_conversation_channels(self, channel_id):
         try:
             with MongoConnector() as connector:
                 collection = connector.db["messages"].find()
@@ -69,19 +73,19 @@ class ConversationContainer(ScrollView):
         except Exception as e:
             print(e)
 
-        # conv_file_path = config.PUBLIC_DIR + "/tmp_conversations/basic.json"
-        # with open(conv_file_path) as json_file:
-        #    conv = json.load(json_file)
-
-        # for message in conv["data"]:
-        #    msg = MessageSent(text=message["timestamp"] + " - " + message["sender"] + "\n" + message["msg"])
-        #    self.messages_box.add_widget(msg, len(self.messages_box.children))
+    def init_conversation_private(self, private_conversation):
+        for message in private_conversation.messages:
+            if message["sender"] == Main.current_user:
+                msg = MessageSent(
+                    text=message["timestamp"] + " - " + message["sender"] + "\n" + message["msg"])
+                self.messages_box.add_widget(msg, len(self.messages_box.children))
+            else:
+                msg = MessageReceived(
+                    text=message["timestamp"] + " - " + message["sender"] + "\n" + message["msg"])
+                self.messages_box.add_widget(msg, len(self.messages_box.children))
 
     def add_message(self, msg_obj, pos="left"):
-        msg = MessageSent()
-
-        if pos == "right":
-            msg = MessageReceived()  # ici
+        msg = MessageSent()  # ici
         msg.text = str(msg_obj.timestamp) + " - " + msg_obj.sender + "\n" + msg_obj.msg
         self.messages_box.add_widget(msg, len(self.messages_box.children))
 
@@ -89,12 +93,13 @@ class ConversationContainer(ScrollView):
 class Conversation(RelativeLayout):
     def __init__(self, channel, private_conversation):
         super(Conversation, self).__init__()
-        if channel is None:
-            self.messages_container = ConversationContainer(private_conversation.messages)
-        if private_conversation is None:
-            print(channel.channel_id)
-            self.messages_container = ConversationContainer(channel.channel_id)
-        # self.messages_container = ConversationContainer(channel._id)
+        self.channel = channel
+        self.private_conversation = private_conversation
+        if self.channel is None:
+            print(private_conversation.identifier)
+            self.messages_container = ConversationContainer(channel_id=None, private_conversation=private_conversation)
+        if self.private_conversation is None:
+            self.messages_container = ConversationContainer(channel_id=channel.channel_id, private_conversation=None)
         self.inputs_container = InputsContainer()
 
         self.add_widget(self.messages_container)
@@ -104,14 +109,21 @@ class Conversation(RelativeLayout):
         txt = self.inputs_container.ids.message_input.text
 
         if txt:
-            msg = Message(datetime.now(), txt, Main.current_user, self.messages_container.channel_id)
-            # print(self.messages_container.channel_id)
-            if msg.sender == Main.current_user:
-                self.messages_container.add_message(msg, pos="right")
-            else:
-                self.messages_container.add_message(msg)
-            msg.send_to_db()
+            if self.channel is None:
+                msg = Message(timestamp=datetime.now(), msg=txt, sender=Main.current_user,
+                              channel_id=None,
+                              conversation_id=self.private_conversation.identifier,
+                              is_edited=False)
+            if self.private_conversation is None:
+                msg = Message(timestamp=datetime.now(), msg=txt, sender=Main.current_user,
+                              channel_id=self.channel.channel_id,
+                              conversation_id=None,
+                              is_edited=False)
 
+            self.messages_container.add_message(msg, pos="right")
+            msg.send_to_db()
+            # actualise la liste des messages dans l'objet PrivateConversation
+            self.private_conversation.update_messages_from_db()
             if txt[0] == "/":
                 bot = Commands(txt)
                 response_from_bot = bot.result

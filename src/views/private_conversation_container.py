@@ -1,11 +1,17 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+from kivy.lang import Builder
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManagerException
 from kivy.uix.scrollview import ScrollView
 
 from main import Main
+from src.config import config
 from src.models.mongo_connector import MongoConnector
-from src.models.private_messages import PrivateConversation
+from src.models.private_conversation import PrivateConversation
 from src.models.screens_manager import ScreensManager
+
+#Builder.load_file("{0}/conversation.kv".format(config.VIEWS_DIR))
 
 
 class ConversationListButton(Button):
@@ -68,5 +74,6 @@ class PrivateConversationContainer(ScrollView):
         """
         PRE : membres is list of strings, channel is Channel, team and id_channel are string
         """
+        print(conversation)
         self.landing_screen.display_participant_conversation(conversation)
         self.landing_screen.display_conversation(channel=None, private_conversation=conversation)

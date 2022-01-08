@@ -55,7 +55,7 @@ class Main(App):
         # db_delete_document.delete_collection("private_messages")
         # db_verify.verification_collection("teams")
         # db_verify.verification_collection("channels")
-        # db_verify.verification_collection("messages")
+        db_verify.verification_collection("messages")
         # db_verify.verification_collection("private_messages")
         landing_screen.set_teams_list()
         return sm
