@@ -26,15 +26,9 @@ import uuid
 from dotenv import load_dotenv
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.uix.popup import Popup
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.textinput import TextInput
 
 import src.config.config as config
 from src.models.screens_manager import ScreensManager
-from src.models.user import User
 from src.utils import db_delete_document, db_verify
 
 load_dotenv()
@@ -42,39 +36,10 @@ load_dotenv()
 Builder.load_file("{0}/common.kv".format(config.VIEWS_DIR))
 
 
-def set_user(pseudo):
-    new_user: User
-    if pseudo != "":
-        new_user = User(uid=uuid.uuid4(), pseudo=pseudo, current_user=True)
-        return new_user
-    else:
-        print("erreur")
-        login()
-
-
-def login():
-    content = RelativeLayout()
-    current_user_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
-                                   pos_hint={'center_x': .5, 'center_y': .3})
-    login_button = Button(text="Login", size_hint=(None, None), size=(150, 40),
-                          pos_hint={'center_x': .4, 'center_y': .1})
-    # ajout des button, de l'input et du label a la popup
-    content.add_widget(Label(text="Votre pseudo :"))
-    content.add_widget(current_user_input)
-    content.add_widget(login_button)
-    popup = Popup(title="identifiez vous",
-                  size_hint=(.5, .5),
-                  pos_hint={'center_x': .5, 'center_y': .5},
-                  content=content,
-                  auto_dismiss=False)
-    # définition des actions liée au button
-    login_button.bind(on_press=lambda a: set_user(current_user_input.text) and popup.dismiss())
-    popup.open()
-
-
 class Main(App):
     title = 'EpheCom'
     current_user = "Vincent"
+    current_user_logged = ["Vincent", "Alice", "Mady"]
 
     def build(self):
         from src.views.landing import LandingScreen
@@ -87,9 +52,11 @@ class Main(App):
         # db_delete_document.delete_collection("teams")
         # db_delete_document.delete_collection("channels")
         # db_delete_document.delete_collection("messages")
-        db_verify.verification_collection("teams")
-        db_verify.verification_collection("channels")
+        # db_delete_document.delete_collection("private_messages")
+        # db_verify.verification_collection("teams")
+        # db_verify.verification_collection("channels")
         db_verify.verification_collection("messages")
+        # db_verify.verification_collection("private_messages")
         landing_screen.set_teams_list()
         return sm
 

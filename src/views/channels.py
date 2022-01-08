@@ -7,6 +7,7 @@
 """
 import uuid
 
+from kivy.graphics import Color
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -16,11 +17,13 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import ScreenManagerException
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
+from kivy.utils import rgba
 
 from main import Main
 from src.config import config
 from src.models.channel import Channel
 from src.models.group import Group
+from src.models.private_conversation import PrivateConversation
 from src.models.screens_manager import ScreensManager
 from src.models.team import Team
 
@@ -76,13 +79,8 @@ class ChannelsContainer(ScrollView):
         """generate the list of groups and channels"""
         self.channels_container.clear_widgets()
         groups = {}
-        print(self.channels_list)
-        print(self.channels_list)
-        print(self.channels_list)
-        print(self.channels_list)
         for channel in self.channels_list:
             group_name = channel.group.name
-
             if group_name not in groups:
                 group = BoxLayout(orientation="vertical", size_hint_y=None)
                 title_row = GroupTitleRow()
@@ -127,7 +125,7 @@ class ChannelsContainer(ScrollView):
         PRE : membres is list of strings, channel is Channel, team and id_channel are string
         """
         self.landing_screen.display_participant_channel(membres, channel, team)
-        self.landing_screen.display_conversation(channel)
+        self.landing_screen.display_conversation(channel=channel, private_conversation=None)
 
     def add_new_group(self):
         print("nouveau groupe")
@@ -218,17 +216,20 @@ class ChannelsContainer(ScrollView):
 
 
 class ParticipantContainer(ScrollView):
-    def __init__(self, member_list, channel, team, display_team_member: bool):
+    def __init__(self, member_list, channel, team, conversation,
+                 display_team_member: bool, display_channels_member: bool):
         """create the container who contains all the user in the current channel"""
         """
         PRE : member_list is list, channel is Channel object, team is strings
         """
         super(ParticipantContainer, self).__init__()
         self.display_team_member = display_team_member
+        self.display_channels_member = display_channels_member
         self.content = self.ids.member_content
         self.membres_list = member_list
         self.channel = channel
         self.team = team
+        self.conversation = conversation
         self.init_member_list()
         self.sm = ScreensManager()
         self.landing_screen = self.get_landing_screen()
@@ -249,13 +250,22 @@ class ParticipantContainer(ScrollView):
         self.content.clear_widgets()
         for member in self.membres_list:
             member_label = MembersListButton(text=member)
+            if member in Main.current_user_logged:
+                member_label.color = (0, 255, 0, 1)
+            member_label.size_hint_y = 0.1
+            member_label.size_hint_max_y = 20
             self.content.add_widget(member_label)
         add_button_label = MembersListButton(text="Ajouter")
-        if not self.display_team_member:
-            add_button_label.bind(on_press=lambda a: self.add_member_to_channel("test"))
-        else:
-            add_button_label.bind(on_press=lambda a: self.add_member_to_team("test"))
         self.content.add_widget(add_button_label)
+        add_button_label.size_hint_y = 0.1
+        add_button_label.size_hint_max_y = 20
+        if self.display_channels_member:
+            add_button_label.bind(on_press=lambda a: self.add_member_to_channel("test"))
+        if self.display_team_member:
+            add_button_label.bind(on_press=lambda a: self.add_member_to_team("test"))
+        # !! a faire !!
+        else:
+            add_button_label.bind(on_press=lambda a: print("ajouter un membre a la conv privé"))
 
     def add_member_to_channel(self, member_pseudo: str):
         """add a new membre in the channel and update data on DB"""
