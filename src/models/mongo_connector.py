@@ -1,3 +1,5 @@
+import traceback
+
 from pymongo import MongoClient
 
 from src.config import config
@@ -31,5 +33,9 @@ class MongoConnector:
     def __enter__(self):
         return self
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            traceback.print_exception(exc_type, exc_val, exc_tb)
         self.db.close()
+        return True
+

@@ -64,12 +64,15 @@ class ConversationContainer(ScrollView):
                     if document['channel_id'] is not None and document['channel_id'] == channel_id:
                         if document["sender"] == Main.current_user:
                             msg = MessageSent(
-                                text=document["timestamp"] + " - " + document["sender"] + "\n" + document["msg"])
+                                text=document["timestamp"] + " - " + document["sender"] + "\n" + "[ref='click']" +
+                                     document["msg"] + "[/ref]",markup = True,
+                                on_ref_press=lambda a,_message = "Coucou": print(_message))
                             self.messages_box.add_widget(msg, len(self.messages_box.children))
                         else:
                             msg = MessageReceived(
-                                text=document["timestamp"] + " - " + document["sender"] +
-                                     "\n" + document["msg"])
+                                text=document["timestamp"] + " - " + document["sender"] + "\n" +
+                                     document["msg"])
+
                             self.messages_box.add_widget(msg, len(self.messages_box.children))
         except Exception as e:
             print(e)
@@ -82,14 +85,26 @@ class ConversationContainer(ScrollView):
                 self.messages_box.add_widget(msg, len(self.messages_box.children))
             else:
                 msg = MessageReceived(
-                    text=message["timestamp"] + " - " + message["sender"] + "\n" + message["msg"])
+                    text=message["timestamp"] + " - " + message["sender"] +
+                         "\n" + message["msg"])
                 self.messages_box.add_widget(msg, len(self.messages_box.children))
 
     def add_message(self, msg_obj, pos="left"):
         msg = MessageSent()  # ici
         msg.text = str(msg_obj.timestamp) + " - " + msg_obj.sender + "\n" + msg_obj.msg
         self.messages_box.add_widget(msg, len(self.messages_box.children))
-    
+
+    # def update_message_on_db(self, msg_obj, new_msg):
+    #     try:
+    #         with MongoConnector as connector:
+    #             collection = connector.db["messages"]
+    #             collection.find_one_and_update({"msg": msg_obj}, {"msg": new_msg})
+    #     except Exception as e:
+    #         print(e)
+
+    # def print_this(self):
+    #     print("Je suis la")
+
 
 class Conversation(RelativeLayout):
     def __init__(self, channel, private_conversation):

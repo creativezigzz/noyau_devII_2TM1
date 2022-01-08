@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import traceback
 import uuid
 
 from src.models.group import Group
@@ -107,4 +107,7 @@ class Channel:
     def mute_group(self):
         pass
 
-
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            traceback.print_exception(exc_type, exc_val, exc_tb)
+        return True

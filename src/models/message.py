@@ -6,6 +6,7 @@
     ----- CODE DE LA CLASSE A IMPLEMENTER -----
 """
 import json
+import traceback
 
 from src.config import config
 from src.models.mongo_connector import MongoConnector
@@ -85,3 +86,8 @@ class Message:
         POST : the message is deleted of the db
         """
         self.__collection.delete_one(self._id)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is not None:
+            traceback.print_exception(exc_type, exc_val, exc_tb)
+        return True
