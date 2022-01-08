@@ -65,7 +65,8 @@ class ConversationContainer(ScrollView):
                             self.messages_box.add_widget(msg, len(self.messages_box.children))
                         else:
                             msg = MessageReceived(
-                                text=document["timestamp"] + " - " + document["sender"] + "\n" + document["msg"])
+                                text=document["timestamp"] + " - " + document["sender"] +
+                                     "\n" + document["msg"])
                             self.messages_box.add_widget(msg, len(self.messages_box.children))
         except Exception as e:
             print(e)
@@ -85,7 +86,7 @@ class ConversationContainer(ScrollView):
             msg = MessageReceived()  # ici
         msg.text = str(msg_obj.timestamp) + " - " + msg_obj.sender + "\n" + msg_obj.msg
         self.messages_box.add_widget(msg, len(self.messages_box.children))
-
+    
 
 class Conversation(RelativeLayout):
     def __init__(self, channel):
