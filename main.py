@@ -40,6 +40,7 @@ class Main(App):
     title = 'EpheCom'
     current_user = "Vincent"
     current_user_logged = ["Vincent", "Alice", "Mady"]
+    all_user = []
 
     def build(self):
         from src.views.landing import LandingScreen
@@ -55,10 +56,15 @@ class Main(App):
         # db_delete_document.delete_collection("private_messages")
         # db_verify.verification_collection("teams")
         # db_verify.verification_collection("channels")
-        db_verify.verification_collection("messages")
+        # db_verify.verification_collection("messages")
         # db_verify.verification_collection("private_messages")
+        get_all_user()
         landing_screen.set_teams_list()
         return sm
+
+
+def get_all_user():
+    pass
 
 
 class Personne:

@@ -32,4 +32,3 @@ def verification_collection(collection_name: str):
 
     except Exception as e:
         print(e)
-

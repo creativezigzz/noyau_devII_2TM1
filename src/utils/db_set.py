@@ -75,11 +75,27 @@ data_messages = [
 
     {'_id': UUID('c3525263-02d9-4b75-8b23-5dfe619e95b8'),
      'timestamp': '2021-12-23 10:35:59.314162',
-     'msg': 'test 10h35',
+     'msg': "test d'envois de messages",
      'sender': 'Vincent',
      'is_edited': False,
      'channel_id': None,
      'conversation_id': "cae144f6-2c9c-4096-a5c1-572c1807e065"},
+
+    {'_id': UUID('c3525263-02d9-4b75-8b23-5dfe619e95b8'),
+     'timestamp': '2021-12-23 10:35:59.314162',
+     'msg': 'test conversation privé',
+     'sender': 'Vincent',
+     'is_edited': False,
+     'channel_id': None,
+     'conversation_id': "dae144f6-2c9c-4096-a4c1-572c1807e065"},
+
+    {'_id': UUID('c3525263-02d9-4b75-8b23-5dfe619e95b8'),
+     'timestamp': '2021-12-23 10:35:59.314162',
+     'msg': 'test 10h35',
+     'sender': 'Vincent',
+     'is_edited': False,
+     'channel_id': None,
+     'conversation_id': "dae144f6-2c9c-4096-a4c1-572c1807e065"},
 ]
 
 data_teams = [{
@@ -196,7 +212,6 @@ def set_collection_team():
             db = connector.db
             collection_team = db["teams"]
             collection_team.insert_many(data_teams)
-            # collection_team.insert_many(data_teams2)
     except Exception as e:
         print(e)
 

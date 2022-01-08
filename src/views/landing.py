@@ -107,7 +107,6 @@ class LandingScreen(Screen):
         self.participant_box.clear_widgets()
         self.rooms_box.clear_widgets()
         self.rooms_box.add_widget(PrivateConversationContainer())
-        print("afficher les conversation privées")
 
     def display_participant_conversation(self, conversation):
         self.participant_box.clear_widgets()

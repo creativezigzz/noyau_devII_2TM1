@@ -117,16 +117,18 @@ class Conversation(RelativeLayout):
         if self.private_conversation is None:
             self.messages_container = ConversationContainer(channel_id=channel.channel_id, private_conversation=None)
         self.inputs_container = InputsContainer()
-
         self.add_widget(self.messages_container)
         self.add_widget(self.inputs_container)
 
     def send_message(self):
         txt = self.inputs_container.ids.message_input.text
+        timestamp = datetime.now()
+        if self.private_conversation is not None:
+            self.private_conversation.update_last_message(timestamp)
 
         if txt:
             if self.channel is None:
-                msg = Message(timestamp=datetime.now(), msg=txt, sender=Main.current_user,
+                msg = Message(timestamp=timestamp, msg=txt, sender=Main.current_user,
                               channel_id=None,
                               conversation_id=self.private_conversation.identifier,
                               is_edited=False)
@@ -139,7 +141,8 @@ class Conversation(RelativeLayout):
             self.messages_container.add_message(msg, pos="right")
             msg.send_to_db()
             # actualise la liste des messages dans l'objet PrivateConversation
-            self.private_conversation.update_messages_from_db()
+            if self.channel is None:
+                self.private_conversation.update_messages_from_db()
             if txt[0] == "/":
                 bot = Commands(txt)
                 response_from_bot = bot.result

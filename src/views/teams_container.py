@@ -185,10 +185,10 @@ class TeamsContainer(ScrollView):
 
         # définition des actions liée au button
         close.bind(on_press=lambda a: popup.dismiss())
-        ajouter.bind(on_press=lambda a: self.add_team_on_db(team_name_input.text))
+        ajouter.bind(on_press=lambda a: self.add_team_on_db(team_name_input.text,popup))
         popup.open()
 
-    def add_team_on_db(self, team_name: str):
+    def add_team_on_db(self, team_name: str, popup):
         """
         Ajoute une nouvelle team dans la collection "teams" de la db dont le seul participant est le current_user
         """
@@ -207,3 +207,4 @@ class TeamsContainer(ScrollView):
             print(e)
         self.set_data_from_db()
         self.init_teams_list()
+        popup.dismiss()

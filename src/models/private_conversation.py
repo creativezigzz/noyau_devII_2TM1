@@ -1,11 +1,14 @@
-from bson import timestamp
+import uuid
 
 from src.models.mongo_connector import MongoConnector
 
 
 class PrivateConversation:
-    def __init__(self, id: str, name: str, members: list, last_message):
-        self._id = id
+    def __init__(self, id, name: str, members: list, last_message=None):
+        if id is None:
+            self._id = uuid.uuid4()
+        else:
+            self._id = id
         self.name = name
         self.members = members
         self.last_message = last_message
@@ -20,6 +23,14 @@ class PrivateConversation:
     @property
     def identifier(self):
         return self._id
+
+    def send_conversation_on_db(self):
+        query = {'_id': self._id,
+                 'name': self.name,
+                 'members': self.members,
+                 'last_message': self.last_message
+                 }
+        self.__collection.insert_one(query)
 
     def add_member(self, new_member):
         # ajout dans l'objet
@@ -40,6 +51,7 @@ class PrivateConversation:
         self.__collection.update_one(filter=query, update=new_last_message)
 
     def get_messages_from_db(self):
+        self.messages = []
         try:
             with MongoConnector() as connector:
                 collection_messages = connector.db["messages"]
@@ -51,5 +63,4 @@ class PrivateConversation:
             print(error)
 
     def update_messages_from_db(self):
-        self.messages = []
         self.get_messages_from_db()
