@@ -11,6 +11,9 @@ from main import Main
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.textinput import TextInput
+from kivy.uix.popup import Popup
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.scrollview import ScrollView
 
@@ -31,6 +34,10 @@ class MessageLabel(Label):
 
 
 class MessageSent(MessageLabel):
+    pass
+
+
+class MessageSentButton(Button):
     pass
 
 
@@ -65,9 +72,14 @@ class ConversationContainer(ScrollView):
                         if document["sender"] == Main.current_user:
                             msg = MessageSent(
                                 text=document["timestamp"] + " - " + document["sender"] + "\n" + "[ref='click']" +
-                                     document["msg"] + "[/ref]",markup = True,
-                                on_ref_press=lambda a,_message = "Coucou": print(_message))
-                            self.messages_box.add_widget(msg, len(self.messages_box.children))
+                                     document["msg"] + "[/ref]", markup=True,
+                                on_ref_press=lambda a, _message="Coucou": print(_message))
+                            msg_id = document['_id']
+                            edit_btn = MessageSentButton(text="edit",
+                                                         on_press=lambda a, _msg=msg_id: self.edit_msg(_msg, connector.db["messages"])
+                                                         , size_hint=(None, None), size=(50, 40), markup=True)
+                            self.messages_box.add_widget(msg)
+                            self.messages_box.add_widget(edit_btn)
                         else:
                             msg = MessageReceived(
                                 text=document["timestamp"] + " - " + document["sender"] + "\n" +
@@ -76,6 +88,40 @@ class ConversationContainer(ScrollView):
                             self.messages_box.add_widget(msg, len(self.messages_box.children))
         except Exception as e:
             print(e)
+
+    def edit_msg(self, msg, collection):
+        content = RelativeLayout()
+        msg_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
+                                       pos_hint={'center_x': .5, 'center_y': .3})
+
+        cancel = Button(text="Annuler", size_hint=(None, None), size=(150, 40),
+                        pos_hint={'center_x': .6, 'center_y': .1})
+
+        update = Button(text="Update", size_hint=(None, None), size=(150, 40),
+                         pos_hint={'center_x': .4, 'center_y': .1})
+        # ajout des button, de l'input et du label a la popup
+        content.add_widget(Label(text="Le texte du nouveau message"))
+        content.add_widget(msg_input)
+        content.add_widget(update)
+        content.add_widget(cancel)
+        popup = Popup(title="Editer le message",
+                      size_hint=(.5, .5),
+                      pos_hint={'center_x': .5, 'center_y': .5},
+                      content=content,
+                      auto_dismiss=False)
+
+        # définition des actions liée au button
+        cancel.bind(on_press=lambda a: popup.dismiss())
+        update.bind(on_press=lambda a: self.update_msg(msg, msg_input.text, collection) and popup.dismiss())
+        popup.open()
+
+    def update_msg(self, message_id, new_msg, collection):
+        query = {"_id": message_id}
+        new_message = {"$set": {
+            "msg": new_msg
+        }}
+        collection.update_one(query, new_message)
+        self.constant_update()
 
     def init_conversation_private(self, private_conversation):
         for message in private_conversation.messages:
@@ -94,6 +140,8 @@ class ConversationContainer(ScrollView):
         msg.text = str(msg_obj.timestamp) + " - " + msg_obj.sender + "\n" + msg_obj.msg
         self.messages_box.add_widget(msg, len(self.messages_box.children))
 
+    # def update_message(self, msg_obj, new_msg):
+    #    msg_obj.update_msg(new_msg)
     # def update_message_on_db(self, msg_obj, new_msg):
     #     try:
     #         with MongoConnector as connector:
