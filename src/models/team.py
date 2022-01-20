@@ -44,26 +44,11 @@ class Team:
             self.participants = participants
             self.admin_team = admin_team
             self.icon_path = icon_path
-        try:
-            with MongoConnector() as connector:
-                self.__collection = connector.db["teams"]
-        except Exception as error:
-            print(error)
-
-    def join(self):
-        """
-            Méthode permettant à un utilisateur de rejoindre cette équipe.
-        """
-        pass
-
-    def leave(self):
-        """
-            Méthode permettant à un utilisateur de quitter cette équipe.
-        """
-        pass
-
-    def get_participants_status(self):
-        pass
+            try:
+                with MongoConnector() as connector:
+                    self.__collection = connector.db["teams"]
+            except Exception as error:
+                print(error)
 
     def add_channel_to_current_team(self, new_channel: Channel):
         """add a new channel to the team"""
@@ -167,3 +152,18 @@ class Team:
             if member == i:
                 is_member = True
         return is_member
+
+    def join(self):
+        """
+            Méthode permettant à un utilisateur de rejoindre cette équipe.
+        """
+        pass
+
+    def leave(self):
+        """
+            Méthode permettant à un utilisateur de quitter cette équipe.
+        """
+        pass
+
+    def get_participants_status(self):
+        pass

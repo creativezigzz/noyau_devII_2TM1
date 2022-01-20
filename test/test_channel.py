@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import src.models.channel
+from src.models import channel
 from src.models.channel import Channel
 import unittest
 import uuid
@@ -43,15 +44,19 @@ class Test(unittest.TestCase):
     def test_remove_member(self):
         """test the remove_member method"""
         with self.assertRaises(TypeError):
-            Channel("id8", "channel_test_remove", "channel_admin", channel.Group("group1"), ["moi", "toi"]).remove_member()
+            Channel("id8", "channel_test_remove", "channel_admin", channel.Group("group1"),
+                    ["moi", "toi"]).remove_member()
         with self.assertRaises(channel.WrongTypeException):
-            Channel("id9", "channel_test_remove", "channel_admin", channel.Group("group1"), ["moi", "toi"]).remove_member(
+            Channel("id9", "channel_test_remove", "channel_admin", channel.Group("group1"),
+                    ["moi", "toi"]).remove_member(
                 18)
         with self.assertRaises(TypeError):
-            Channel("id10", "channel_test_remove", "channel_admin", channel.Group("group1"), ["moi", "toi"]).remove_member(
+            Channel("id10", "channel_test_remove", "channel_admin", channel.Group("group1"),
+                    ["moi", "toi"]).remove_member(
                 "toi", "moi")
         with self.assertRaises(channel.ParamNotFoundException):
-            Channel("id11", "channel_test_remove", "channel_admin", channel.Group("group1"), ["moi", "toi"]).remove_member(
+            Channel("id11", "channel_test_remove", "channel_admin", channel.Group("group1"),
+                    ["moi", "toi"]).remove_member(
                 "toto")
         with self.assertRaises(channel.WrongTypeException):
             Channel("id12", "channel_test_remove", "channel_admin", channel.Group("group1"), []).remove_member(
@@ -63,7 +68,6 @@ class Test(unittest.TestCase):
         self.assertEqual(channel_b.channel_members, [])
         with self.assertRaises(channel.ParamNotFoundException):
             channel_b.remove_member("toto")
-
 
 
 if __name__ == '__main__':

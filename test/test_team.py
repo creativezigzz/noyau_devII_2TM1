@@ -381,7 +381,7 @@ class TestTeam(unittest.TestCase):
         test_init_team_participants()
 #                                                                          A faire
 #
-    def add_channel_to_current_team(self):
+    def test_add_channel_to_current_team(self):
         team_de_test = Team(
             identifier="123456",
             name="test",
@@ -392,23 +392,72 @@ class TestTeam(unittest.TestCase):
             participants=["Vincent", "UserTest1", "Alice"]
         )
         with self.assertRaises(TypeError):
-            team_de_test.is_member_team(membre=123)
+            team_de_test.add_channel_to_current_team(membre=123)
         with self.assertRaises(TypeError):
-            team_de_test.is_member_team(membre=["Vincent", "Alice"])
+            team_de_test.add_channel_to_current_team(membre=["Vincent", "Alice"])
         with self.assertRaises(TypeError):
-            team_de_test.is_member_team(membre={"test": "123"})
+            team_de_test.add_channel_to_current_team(membre={"test": "123"})
         with self.assertRaises(TypeError):
-            team_de_test.is_member_team(membre=True)
+            team_de_test.add_channel_to_current_team(membre=True)
 
+    def test_add_channel_on_db(self):
+        team_de_test = Team(
+            identifier="123456",
+            name="test",
+            group_names=["test1", "test2"],
+            admin_team=["Vincent"],
+            channels=["channel1", "channel2", "channel3"],
+            icon_path=None,
+            participants=["Vincent", "UserTest1", "Alice"]
+        )
+        with self.assertRaises(TypeError):
+            team_de_test.add_channel_on_db(membre=123)
+        with self.assertRaises(TypeError):
+            team_de_test.add_channel_on_db(membre=["Vincent", "Alice"])
+        with self.assertRaises(TypeError):
+            team_de_test.add_channel_on_db(membre={"test": "123"})
+        with self.assertRaises(TypeError):
+            team_de_test.add_channel_on_db(membre=True)
 
-    def add_channel_on_db(self):
-        pass
+    def test_add_member(self):
+        team_de_test = Team(
+            identifier="123456",
+            name="test",
+            group_names=["test1", "test2"],
+            admin_team=["Vincent"],
+            channels=["channel1", "channel2", "channel3"],
+            icon_path=None,
+            participants=["Vincent", "UserTest1", "Alice"]
+        )
+        with self.assertRaises(TypeError):
+            team_de_test.add_member(membre=123)
+        with self.assertRaises(TypeError):
+            team_de_test.add_member(membre=["Vincent", "Alice"])
+        with self.assertRaises(TypeError):
+            team_de_test.add_member(membre={"test": "123"})
+        with self.assertRaises(TypeError):
+            team_de_test.add_member(membre=True)
+        team_de_test.add_member("user_des_tests")
+        self.assertIn("user_des_tests", team_de_test.participants)
 
-    def add_member(self):
-        pass
-
-    def add_group(self):
-        pass
+    def test_add_group(self):
+        team_de_test = Team(
+            identifier="123456",
+            name="test",
+            group_names=["test1", "test2"],
+            admin_team=["Vincent"],
+            channels=["channel1", "channel2", "channel3"],
+            icon_path=None,
+            participants=["Vincent", "UserTest1", "Alice"]
+        )
+        with self.assertRaises(TypeError):
+            team_de_test.add_group(membre=123)
+        with self.assertRaises(TypeError):
+            team_de_test.add_group(membre=["Vincent", "Alice"])
+        with self.assertRaises(TypeError):
+            team_de_test.add_group(membre={"test": "123"})
+        with self.assertRaises(TypeError):
+            team_de_test.add_group(membre=True)
 
     def test_is_team_member(self):
         team_de_test = Team(

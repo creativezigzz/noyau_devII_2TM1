@@ -67,7 +67,13 @@ class Message:
         PRE : new_msg is a string
         POST : self.msg is replaced by new_message
         """
-        self.__collection.find_one_and_update(self._id, {'msg': new_msg})
+        #self.__collection.find_one_and_update(self._id, {'msg': new_msg})
+        # update dans la DB
+        query = {"_id": self._id}
+        new_message = {"$set": {
+            "msg": self.new_msg
+        }}
+        self.__collection.update_one(filter=query, update=new_message)
 
     def delete_db(self):
         """delete the message object"""
