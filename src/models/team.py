@@ -32,9 +32,9 @@ class Team:
             raise TypeError("Invalid arg type : group_names")
         if not isinstance(admin_team, list):
             raise TypeError("Invalid arg type : admin_team")
-        if not isinstance(icon_path, str) or icon_path is None:
+        if (not isinstance(icon_path, str)) and (icon_path is not None):
             raise TypeError("Invalid arg type : icon_path")
-        if not isinstance(participants, list) or participants is None:
+        if not isinstance(participants, list) and participants is not None:
             raise TypeError("Invalid arg type : participants")
         else:
             self.identifier = identifier

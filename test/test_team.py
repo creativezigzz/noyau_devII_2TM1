@@ -227,7 +227,7 @@ class TestTeam(unittest.TestCase):
                      participants=None,
                      )
             # test channels = int
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -237,7 +237,7 @@ class TestTeam(unittest.TestCase):
                      participants=None,
                      )
             # test channels = float
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -247,7 +247,7 @@ class TestTeam(unittest.TestCase):
                      participants=None,
                      )
             # test channels = bool
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -257,7 +257,7 @@ class TestTeam(unittest.TestCase):
                      participants=None,
                      )
             # test channels = dict
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -269,7 +269,7 @@ class TestTeam(unittest.TestCase):
 
         def test_init_team_icon_path():
             # test icon_path = int
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -279,7 +279,7 @@ class TestTeam(unittest.TestCase):
                      participants=None,
                      )
             # test icon_path = float
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -289,7 +289,7 @@ class TestTeam(unittest.TestCase):
                      participants=None,
                      )
             # test icon_path = list
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -299,7 +299,7 @@ class TestTeam(unittest.TestCase):
                      participants=None,
                      )
             # test icon_path = dict
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -309,7 +309,7 @@ class TestTeam(unittest.TestCase):
                      participants=None,
                      )
             # test icon_path = bool
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -321,7 +321,7 @@ class TestTeam(unittest.TestCase):
 
         def test_init_team_participants():
             # test participants = int
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -331,7 +331,7 @@ class TestTeam(unittest.TestCase):
                      participants=123,
                      )
             # test participants = float
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -341,7 +341,7 @@ class TestTeam(unittest.TestCase):
                      participants=1.23,
                      )
             # test participants = str
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -351,7 +351,7 @@ class TestTeam(unittest.TestCase):
                      participants="123",
                      )
             # test participants = dict
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -361,7 +361,7 @@ class TestTeam(unittest.TestCase):
                      participants={"test": "123"},
                      )
             # test participants = bool
-            with self.assertRaises(AssertionError):
+            with self.assertRaises(TypeError):
                 Team(identifier="123",
                      name="test",
                      group_names=["test1"],
@@ -379,6 +379,36 @@ class TestTeam(unittest.TestCase):
         test_init_team_channels()
         test_init_team_icon_path()
         test_init_team_participants()
+#                                                                          A faire
+#
+    def add_channel_to_current_team(self):
+        team_de_test = Team(
+            identifier="123456",
+            name="test",
+            group_names=["test1", "test2"],
+            admin_team=["Vincent"],
+            channels=["channel1", "channel2", "channel3"],
+            icon_path=None,
+            participants=["Vincent", "UserTest1", "Alice"]
+        )
+        with self.assertRaises(TypeError):
+            team_de_test.is_member_team(membre=123)
+        with self.assertRaises(TypeError):
+            team_de_test.is_member_team(membre=["Vincent", "Alice"])
+        with self.assertRaises(TypeError):
+            team_de_test.is_member_team(membre={"test": "123"})
+        with self.assertRaises(TypeError):
+            team_de_test.is_member_team(membre=True)
+
+
+    def add_channel_on_db(self):
+        pass
+
+    def add_member(self):
+        pass
+
+    def add_group(self):
+        pass
 
     def test_is_team_member(self):
         team_de_test = Team(
@@ -409,7 +439,6 @@ class TestTeam(unittest.TestCase):
             participants=None
         )
         self.assertIsNone(team_de_test2.participants)
-        self.assertNotIn("UserTest1", team_de_test2.participants)
 
     def test_is_team_admin(self):
         team_de_test = Team(
@@ -432,3 +461,4 @@ class TestTeam(unittest.TestCase):
 
         self.assertIn("Vincent", team_de_test.admin_team)
         self.assertNotIn("Olivier", team_de_test.admin_team)
+
