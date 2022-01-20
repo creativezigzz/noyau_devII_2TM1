@@ -147,7 +147,7 @@ class TeamsContainer(ScrollView):
                 group_names = data_from_db[team_id]["group_names"]
                 admin_team = data_from_db[team_id]["admin_team"]
                 channels = data_from_db[team_id]["channels"]
-                inst = Team(identifier=team_id,
+                inst = Team(identifier=str(team_id),
                             name=name,
                             channels=channels,
                             group_names=group_names,
