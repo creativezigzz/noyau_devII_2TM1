@@ -17,6 +17,10 @@ class ParamNotFoundException(Exception):
     pass
 
 
+class WrongTypeException(Exception):
+    pass
+
+
 class Channel:
     """class to create a new channel, it can add and remove members to this channel"""
 
@@ -29,18 +33,28 @@ class Channel:
                 group is Group,
                 channel_members and chat_history are lists of strings
         POST : a new Channel object is created
+        RAISE : AssertionError if the parameter are not of the good types.
         """
         if chat_history is None:
             chat_history = []
         self._id = uuid.uuid4()
+        assert isinstance(channel_id, str)
         self.channel_id = channel_id
+        assert isinstance(channel_name, str)
         self.channel_name = channel_name
+        assert isinstance(channel_admin, str)
         self.channel_admin = channel_admin
+        assert isinstance(group, Group)
         self.group = group
+
+        assert isinstance(channel_members, list)
+        for member in channel_members:
+            assert isinstance(member, str)
         self.channel_members = channel_members  # pour moi channel_members serait une
         # liste de string (comme ça on peut ajouter et supprimer des membres facilement
         # ajout automatique de l'admin dans la liste des membres
         self.channel_members.append(self.channel_admin)
+        assert isinstance(chat_history, list)
         self.chat_history = chat_history  # même chose que pour channel_members
 
         try:
@@ -78,7 +92,10 @@ class Channel:
         """
         PRE : member is a string
         POST : member is added to the list of members of the channel
+        RAISE : WrongTypeException if the member parameter is not a string 
         """
+        if type(member) != str:
+            raise WrongTypeException("please enter a string !")
         self.channel_members.append(member)
         query = {"channel_id": self.channel_id}
         new_member = {"$set": {
@@ -91,8 +108,10 @@ class Channel:
         """
         PRE : member is a string that is in the list channel_members
         POST : all the element 'member' of the list channel_members are removed
-        RAISE : paramNotFoundException if member is not in channel_members
+        RAISE : ParamNotFoundException if member is not in channel_members, WrongTypeException if member is not a string
         """
+        if type(member) != str:
+            raise WrongTypeException("please enter a string !")
         if member not in self.channel_members:
             raise ParamNotFoundException(Exception)
         self.channel_members = [i for i in self.channel_members if i != member]  # permet de supprimer chaque élément
