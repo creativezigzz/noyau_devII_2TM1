@@ -37,7 +37,6 @@ class Channel:
         self.channel_name = channel_name
         self.channel_admin = channel_admin
         self.group = group
-
         self.channel_members = channel_members  # pour moi channel_members serait une
         # liste de string (comme ça on peut ajouter et supprimer des membres facilement
         # ajout automatique de l'admin dans la liste des membres

@@ -42,6 +42,9 @@ class PrivateConversation:
         }}
         self.__collection.update_one(filter=query, update=new_member)
 
+    def remove_member(self):
+        pass
+
     def update_last_message(self, new_timestamp):
         self.last_message = new_timestamp
         query = {"_id": self._id}

@@ -7,7 +7,6 @@
 """
 import uuid
 
-from kivy.graphics import Color
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -17,13 +16,11 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.screenmanager import ScreenManagerException
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
-from kivy.utils import rgba
 
 from main import Main
 from src.config import config
 from src.models.channel import Channel
 from src.models.group import Group
-from src.models.private_conversation import PrivateConversation
 from src.models.screens_manager import ScreensManager
 from src.models.team import Team
 

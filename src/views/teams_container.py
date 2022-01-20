@@ -185,7 +185,7 @@ class TeamsContainer(ScrollView):
 
         # définition des actions liée au button
         close.bind(on_press=lambda a: popup.dismiss())
-        ajouter.bind(on_press=lambda a: self.add_team_on_db(team_name_input.text,popup))
+        ajouter.bind(on_press=lambda a: self.add_team_on_db(team_name_input.text, popup))
         popup.open()
 
     def add_team_on_db(self, team_name: str, popup):

@@ -40,7 +40,20 @@ class Main(App):
     title = 'EpheCom'
     current_user = "Vincent"
     current_user_logged = ["Vincent", "Alice", "Mady"]
-    all_user = []
+    all_user = [
+        "SerialMatcher",
+        "Bilou",
+        "Babar",
+        "Jacques",
+        "Vincent",
+        "Mady",
+        "Oli",
+        "Alice",
+        "Toulouse",
+        "Adrien",
+        "Bastien",
+        "Lucas",
+    ]
 
     def build(self):
         from src.views.landing import LandingScreen
