@@ -67,7 +67,7 @@ class Channel:
     def send_to_db(self):
         """send the channel to the database"""
         """
-        PRE : 
+        PRE : / 
         POST : the channel is sent to the database
         """
         query = {

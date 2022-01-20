@@ -195,6 +195,7 @@ class TeamsContainer(ScrollView):
         new_team = {
             "name": team_name,
             "icon_path": "",
+            "admin_team": [Main.current_user],
             "participants": [Main.current_user],
             "channel_id": []
         }

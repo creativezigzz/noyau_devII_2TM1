@@ -18,6 +18,9 @@ class Team:
         """
         PRE : identifier and name are strings, group_names, admin_team and channels are lists.
         POST : a new team object is created
+        RAISES : if identifier and name  are not str => TypeError
+        RAISES : if channels,group_names and admin_team are not list => TypeError
+        RAISES : if icon_path and participants  are not str or None => TypeError
         """
         if not isinstance(identifier, str):
             raise TypeError("Invalid arg type : identifier")
@@ -66,7 +69,8 @@ class Team:
         """add a new channel to the team"""
         """
         PRE : new_channel is a Channel Object
-        POST : new_channel's id is added to the list of the channel ids, new_channel is added on db
+        POST : new_channel's id is added to the curent team's list of the channel ids, new_channel is added on db
+        RAISES : if new_channel is not Channel => TypeError
         """
         if not isinstance(new_channel, Channel):
             raise TypeError("Invalid arg type : new_channel")
@@ -78,8 +82,9 @@ class Team:
     def add_channel_on_db(self, channel_id : str):
         """add a channel to the db"""
         """
-        PRE : channel_id is a string (the id of a channel object)
+        PRE : channel_id is a string 
         POST : a new channel is added to the db
+        RAISES : if channel_id is not str => TypeError
         """
         if not isinstance(channel_id, str):
             raise TypeError("Invalid arg type : channel_id")
@@ -101,6 +106,7 @@ class Team:
         """
         PRE : member is a string
         POST : member is added to the list of members of the channel
+        RAISES : if member is not str => TypeError
         """
         if not isinstance(member, str):
             raise TypeError("Invalid arg type : member")
@@ -118,6 +124,7 @@ class Team:
         """
         PRE : member is a string
         POST : member is added to the list of members of the channel
+        RAISES : if new_group_name is not Str => TypeError
         """
         if not isinstance(new_group_name, str):
             raise TypeError("Invalid arg type : new_group_name")
@@ -135,6 +142,7 @@ class Team:
         """
         PRE : member is a string
         POST : return a boolean: True if the user is an admin of the team, else false
+        RAISES : if member is not str => TypeError
         """
         if not isinstance(member, str):
             raise TypeError("Invalid arg type : member")
@@ -150,6 +158,7 @@ class Team:
         """
         PRE : member is a string
         POST : return a boolean: True if the user is a member of the team, else false
+        RAISES : if member is not str => TypeError
         """
         if not isinstance(member, str):
             raise TypeError("Invalid arg type : member")
