@@ -23,13 +23,26 @@ class Message:
         PRE : timestamp is a datetime object, msg, sender and channel_id are string
         POST : a new message object is created 
         """
-        self.timestamp = timestamp
-        self.msg = msg
-        self.sender = sender
-        self.is_edited = is_edited
-        self._id = uuid.uuid4()
-        self.channel_id = channel_id
-        self.conversation_id = conversation_id
+        if not isinstance(timestamp, str):
+            raise TypeError("Invalid arg type : timestamp")
+        if not isinstance(msg, str):
+            raise TypeError("Invalid arg type : msg")
+        if not isinstance(sender, str):
+            raise TypeError("Invalid arg type : sender")
+        if not isinstance(is_edited, bool):
+            raise TypeError("Invalid arg type : is_edited")
+        if not isinstance(channel_id, str) and channel_id is not None:
+            raise TypeError("Invalid arg type : channel_id")
+        if not isinstance(conversation_id, str) and conversation_id is not None:
+            raise TypeError("Invalid arg type : conversation_id")
+        else:
+            self.timestamp = timestamp
+            self.msg = msg
+            self.sender = sender
+            self.is_edited = is_edited
+            self._id = uuid.uuid4()
+            self.channel_id = channel_id
+            self.conversation_id = conversation_id
 
         try:
             with MongoConnector() as connector:
@@ -62,18 +75,20 @@ class Message:
         self.__collection.insert_one(self.db_formatting())
 
     def update_msg(self, new_msg):
-        """ubdate the message object (self.msg)"""
+        """update the message object (self.msg)"""
         """
         PRE : new_msg is a string
         POST : self.msg is replaced by new_message
         """
-        #self.__collection.find_one_and_update(self._id, {'msg': new_msg})
-        # update dans la DB
-        query = {"_id": self._id}
-        new_message = {"$set": {
-            "msg": self.new_msg
-        }}
-        self.__collection.update_one(filter=query, update=new_message)
+        if not isinstance(new_msg, str):
+            raise TypeError("Invalid arg type : new_msg")
+        else:
+            self.msg=new_msg
+            query = {"_id": self._id}
+            new_message = {"$set": {
+                "msg": new_msg
+            }}
+            self.__collection.update_one(filter=query, update=new_message)
 
     def delete_db(self):
         """delete the message object"""
