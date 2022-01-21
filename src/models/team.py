@@ -59,10 +59,11 @@ class Team:
         """
         if not isinstance(new_channel, Channel):
             raise TypeError("Invalid arg type : new_channel")
-        # ajout de l'objet Channel dans la liste des channels
-        self.channels.append(new_channel)
-        # appel de la fonction permettant d'update la collection
-        self.add_channel_on_db(new_channel.channel_id)
+        else:
+            # ajout de l'objet Channel dans la liste des channels
+            self.channels.append(new_channel)
+            # appel de la fonction permettant d'update la collection
+            self.add_channel_on_db(new_channel.channel_id)
 
     def add_channel_on_db(self, channel_id : str):
         """add a channel to the db"""
@@ -73,18 +74,19 @@ class Team:
         """
         if not isinstance(channel_id, str):
             raise TypeError("Invalid arg type : channel_id")
-        # construction d'une nouvelle liste d'id_channel
-        new_channel_list = []
-        for i in self.channels:
-            new_channel_list.append(i.channel_id)
-        # ajout de l'id du nouveau channel dans la liste
-        new_channel_list.append(channel_id)
-        # update dans la DB
-        query = {"_id": self.identifier}
-        new_member = {"$set": {
-            "channel_id": new_channel_list
-        }}
-        self.__collection.update_one(filter=query, update=new_member)
+        else:
+            # construction d'une nouvelle liste d'id_channel
+            new_channel_list = []
+            for i in self.channels:
+                new_channel_list.append(i.channel_id)
+            # ajout de l'id du nouveau channel dans la liste
+            new_channel_list.append(channel_id)
+            # update dans la DB
+            query = {"_id": self.identifier}
+            new_member = {"$set": {
+                "channel_id": new_channel_list
+            }}
+            self.__collection.update_one(filter=query, update=new_member)
 
     def add_member(self, member : str):
         """add a new member to the team"""
@@ -95,14 +97,15 @@ class Team:
         """
         if not isinstance(member, str):
             raise TypeError("Invalid arg type : member")
-        # ajout du participant dans la liste contenue dans l'objet Team
-        self.participants.append(member)
-        # update dans la DB
-        query = {"name": self.name}
-        new_member = {"$set": {
-            "participants": self.participants
-        }}
-        self.__collection.update_one(filter=query, update=new_member)
+        else:
+            # ajout du participant dans la liste contenue dans l'objet Team
+            self.participants.append(member)
+            # update dans la DB
+            query = {"name": self.name}
+            new_member = {"$set": {
+                "participants": self.participants
+            }}
+            self.__collection.update_one(filter=query, update=new_member)
 
     def add_group(self, new_group_name : str):
         """add a new group to the team"""
@@ -113,14 +116,15 @@ class Team:
         """
         if not isinstance(new_group_name, str):
             raise TypeError("Invalid arg type : new_group_name")
-        # ajout du participant dans la liste contenue dans l'objet Team
-        self.group_names.append(new_group_name)
-        # update dans la DB
-        query = {"name": self.name}
-        new_group_list = {"$set": {
-            "group_names": self.group_names
-        }}
-        self.__collection.update_one(filter=query, update=new_group_list)
+        else:
+            # ajout du participant dans la liste contenue dans l'objet Team
+            self.group_names.append(new_group_name)
+            # update dans la DB
+            query = {"name": self.name}
+            new_group_list = {"$set": {
+                "group_names": self.group_names
+            }}
+            self.__collection.update_one(filter=query, update=new_group_list)
 
     def is_admin_team(self, member):
         """Check if the user is an admin of the team"""
@@ -131,12 +135,12 @@ class Team:
         """
         if not isinstance(member, str):
             raise TypeError("Invalid arg type : member")
-
-        is_admin = False
-        for i in self.admin_team:
-            if member == i:
-                is_admin = True
-        return is_admin
+        else:
+            is_admin = False
+            for i in self.admin_team:
+                if member == i:
+                    is_admin = True
+            return is_admin
 
     def is_member_team(self, member):
         """Check if the user is a mamber of the team"""
@@ -147,11 +151,12 @@ class Team:
         """
         if not isinstance(member, str):
             raise TypeError("Invalid arg type : member")
-        is_member = False
-        for i in self.participants:
-            if member == i:
-                is_member = True
-        return is_member
+        else:
+            is_member = False
+            for i in self.participants:
+                if member == i:
+                    is_member = True
+            return is_member
 
     def join(self):
         """
