@@ -130,7 +130,7 @@ class Team:
         """Check if the user is an admin of the team"""
         """
         PRE : member is a string
-        POST : return a boolean: True if the user is an admin of the team, else false
+        POST : returns a boolean: True if the user is an admin of the team, else false
         RAISES : if member is not str => TypeError
         """
         if not isinstance(member, str):
@@ -146,7 +146,7 @@ class Team:
         """Check if the user is a mamber of the team"""
         """
         PRE : member is a string
-        POST : return a boolean: True if the user is a member of the team, else false
+        POST : returns a boolean: True if the user is a member of the team, else false
         RAISES : if member is not str => TypeError
         """
         if not isinstance(member, str):

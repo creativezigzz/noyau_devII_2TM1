@@ -49,7 +49,7 @@ class MembersListButton(Button):
 
 class ChannelsContainer(ScrollView):
     def __init__(self, channels_list_obj: list, team: Team):
-        """display the member-box and the messages-box"""
+        """initialisation of the ChannelContainer"""
         """
         PRE : membres is list of strings, channel is Channel, team and id_channel are string
         """

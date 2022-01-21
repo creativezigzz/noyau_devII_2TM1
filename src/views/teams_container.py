@@ -87,7 +87,7 @@ class TeamsContainer(ScrollView):
         """
             [BASE]
             Initialise la liste des "Team" auxquelles l'utilisateur est inscrit.
-            Si l'utilisateur fait partie de channels, ils sont affichés le container concerné.
+            Si l'utilisateur fait partie de channels, il est affiché dans la liste des membres dans le container concerné.
             Sinon, un message s'affiche précisant que l'utilisateur ne fait partie d'aucun channel.
         """
         self.content.clear_widgets()
@@ -130,7 +130,7 @@ class TeamsContainer(ScrollView):
         """
             [BASE]
             Récupère la liste des "Team" depuis la banque de données.
-            :return : list : La liste des "Team" (objets) auxquels l'utilisateur appartient, triés par leurs noms.
+            :return : list : La liste des "Team" (objets) auxquels l'utilisateur appartient, triés par nom.
         """
 
         list_of_teams = []
