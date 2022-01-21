@@ -181,7 +181,7 @@ class Conversation(RelativeLayout):
                               conversation_id=self.private_conversation.identifier,
                               is_edited=False)
             if self.private_conversation is None:
-                msg = Message(timestamp=datetime.now(), msg=txt, sender=Main.current_user,
+                msg = Message(timestamp=str(datetime.now()), msg=txt, sender=Main.current_user,
                               channel_id=self.channel.channel_id,
                               conversation_id=None,
                               is_edited=False)
