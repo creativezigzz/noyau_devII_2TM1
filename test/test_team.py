@@ -58,6 +58,16 @@ class TestTeam(unittest.TestCase):
                      icon_path=None,
                      participants=None,
                      )
+            # test identifier = None
+            with self.assertRaises(TypeError):
+                Team(identifier=None,
+                     name="test",
+                     group_names=["test1"],
+                     admin_team=["Vincent"],
+                     channels=["channel1"],
+                     icon_path=None,
+                     participants=None,
+                     )
 
         def test_init_team_name():
             # test name = bool
@@ -472,11 +482,19 @@ class TestTeam(unittest.TestCase):
         with self.assertRaises(TypeError):
             team_de_test.is_member_team(membre=123)
         with self.assertRaises(TypeError):
+            team_de_test.is_member_team(membre=1.023)
+        with self.assertRaises(TypeError):
             team_de_test.is_member_team(membre=["Vincent", "Alice"])
         with self.assertRaises(TypeError):
             team_de_test.is_member_team(membre={"test": "123"})
         with self.assertRaises(TypeError):
             team_de_test.is_member_team(membre=True)
+        with self.assertRaises(TypeError):
+            team_de_test.is_member_team(membre=None)
+
+        self.assertIsNotNone(team_de_test.participants)
+        self.assertEqual(team_de_test.is_member_team("Vincent"), True)
+        self.assertEqual(team_de_test.is_member_team("Olivier"), False)
 
         team_de_test2 = Team(
             identifier="123456",
@@ -488,6 +506,7 @@ class TestTeam(unittest.TestCase):
             participants=None
         )
         self.assertIsNone(team_de_test2.participants)
+        self.assertEqual(team_de_test.is_member_team("Vincent"), False)
 
     def test_is_team_admin(self):
         team_de_test = Team(
@@ -508,6 +527,7 @@ class TestTeam(unittest.TestCase):
         with self.assertRaises(TypeError):
             team_de_test.is_admin_team(membre=True)
 
-        self.assertIn("Vincent", team_de_test.admin_team)
-        self.assertNotIn("Olivier", team_de_test.admin_team)
+        self.assertIsNotNone(team_de_test.admin_team)
+        self.assertEqual(team_de_test.is_admin_team("Vincent"), True)
+        self.assertEqual(team_de_test.is_admin_team("Olivier"), False)
 
