@@ -29,6 +29,7 @@ Builder.load_file("{0}/landing.kv".format(config.VIEWS_DIR))
 
 class LandingScreen(Screen):
     def __init__(self):
+        """display the landing screen"""
         super(LandingScreen, self).__init__()
         self.name = "landing"
         self.sm = ScreensManager()
@@ -40,7 +41,6 @@ class LandingScreen(Screen):
 
     def redirect_to_href(self, href: str):
         """
-            [Base]
             Gestion des évènements de redirection du Screen.
             :param href : Le nom du Screen vers lequel naviguer.
         """
