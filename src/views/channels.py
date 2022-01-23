@@ -52,6 +52,7 @@ class ChannelsContainer(ScrollView):
         """initialisation of the ChannelContainer"""
         """
         PRE : membres is list of strings, channel is Channel, team and id_channel are string
+        POST : channelsContainer is initialised
         """
         super(ChannelsContainer, self).__init__()
         self.channels_list = channels_list_obj
@@ -62,8 +63,9 @@ class ChannelsContainer(ScrollView):
         self.generate_list_rows()
 
     def get_landing_screen(self):
-        """Recuperation du landing_screen"""
+        """Recovery of the landing_screen"""
         """
+        PRE : -
         POST : return landing_screen
         """
         try:
@@ -74,6 +76,10 @@ class ChannelsContainer(ScrollView):
 
     def generate_list_rows(self):
         """generate the list of groups and channels"""
+        """
+        PRE : 
+        POST : the list is generated
+        """
         self.channels_container.clear_widgets()
         groups = {}
         for channel in self.channels_list:
@@ -125,6 +131,11 @@ class ChannelsContainer(ScrollView):
         self.landing_screen.display_conversation(channel=channel, private_conversation=None)
 
     def add_new_group(self):
+        """add a new group to the channel"""
+        """
+        PRE : -
+        POST : the new group is added
+        """
         print("nouveau groupe")
         content = RelativeLayout()
         group_name_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
@@ -153,9 +164,10 @@ class ChannelsContainer(ScrollView):
         popup.open()
 
     def add_new_channel(self, group_name):
+        """add a new channel identified by the group 'group_name'"""
         """
-        Cette méthode permet d'ajouter un nouveau channel dans le groupe concerné.
-        :param group_name : Représente le nom du groupe concerné.
+        PRE : group_name is a string
+        POST : the new channel is added
         """
         # content est toute la popup
         content = RelativeLayout()
