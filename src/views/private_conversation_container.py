@@ -26,6 +26,7 @@ class ConversationAddButton(Button):
 
 class PrivateConversationContainer(ScrollView):
     def __init__(self):
+        """init the conversation container for private conversations"""
         super(PrivateConversationContainer, self).__init__()
         self.content = self.ids.conversation_content
         self.curren_user = Main.current_user
@@ -35,7 +36,7 @@ class PrivateConversationContainer(ScrollView):
         self.landing_screen = self.get_landing_screen()
 
     def get_landing_screen(self):
-        """Recuperation du landing_screen"""
+        """Recovery of the landing_screen"""
         """
         POST : return landing_screen
         """
@@ -46,6 +47,10 @@ class PrivateConversationContainer(ScrollView):
             return None
 
     def get_conversation_from_db(self):
+        """init the conversation from the db"""
+        """
+        POST : the conversation is initialised
+        """
         try:
             with MongoConnector() as connector:
                 collection = connector.db["private_messages"]
@@ -67,6 +72,7 @@ class PrivateConversationContainer(ScrollView):
         self.init_conversation_list()
 
     def init_conversation_list(self):
+        """init the conversations in the conversation_list"""
         self.content.clear_widgets()
         for conversation in self.conversation_list:
             conversation_name_row = ConversationListButton(text=conversation.name,
@@ -89,6 +95,11 @@ class PrivateConversationContainer(ScrollView):
         self.landing_screen.display_conversation(channel=None, private_conversation=conversation)
 
     def create_new_conversation(self, name, members, popup):
+        """create a new conversation"""
+        """
+        PRE : name is a str, members is a list of strings, popup is a Popup object
+        POST : a new private conversation is created
+        """
         print("ajouter une conversation")
         print(name)
         print(members)
@@ -102,6 +113,7 @@ class PrivateConversationContainer(ScrollView):
         popup.dismiss()
 
     def add_new_conversation(self):
+        """create the Popup to create a new conversation with create_new_conversation"""
         member = [Main.current_user]
         # content est toute la popup
         content = RelativeLayout()
