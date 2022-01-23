@@ -48,6 +48,11 @@ class MessageReceived(MessageLabel):
 class ConversationContainer(ScrollView):
 
     def __init__(self, channel_id, private_conversation):
+        """init of the ConversationContainer"""
+        """
+        PRE : channel_id is a str, private_conversation is a PrivateConversation object
+        POST : the ConversationContainer is created
+        """
         super(ConversationContainer, self).__init__()
         self.channel_id = channel_id
         self.private_conversation = private_conversation
@@ -57,6 +62,7 @@ class ConversationContainer(ScrollView):
         self.constant_update()
 
     def constant_update(self):
+        """update the container"""
         if self.private_conversation is None:
             self.init_conversation_channels(self.channel_id)
         if self.channel_id is None:
@@ -64,6 +70,10 @@ class ConversationContainer(ScrollView):
         # time.sleep(1)
 
     def init_conversation_channels(self, channel_id):
+        """init the channels of the conversation"""
+        """
+        PRE : channel_id is a str
+        """
         try:
             with MongoConnector() as connector:
                 collection = connector.db["messages"].find()
@@ -90,6 +100,10 @@ class ConversationContainer(ScrollView):
             print(e)
 
     def edit_msg(self, msg, collection):
+        """edit the message msg"""
+        """
+        PRE : msg is a string, collection is the 'messages' collection of the db
+        """
         content = RelativeLayout()
         msg_input = TextInput(text='', font_size=14, size_hint_y=None, height=50,
                                        pos_hint={'center_x': .5, 'center_y': .3})
@@ -116,6 +130,11 @@ class ConversationContainer(ScrollView):
         popup.open()
 
     def update_msg(self, message_id, new_msg, collection):
+        """replace the message (the msg variable) with the id message id by new_msg"""
+        """
+        PRE : message_id and new_msg are str, collection is the 'messages' collection of the db
+        POST : the msg variable of the message with the id message_id is replaced by new_msg
+        """
         query = {"_id": message_id}
         new_message = {"$set": {
             "msg": new_msg
@@ -124,6 +143,10 @@ class ConversationContainer(ScrollView):
         self.constant_update()
 
     def init_conversation_private(self, private_conversation):
+        """init the messages for a private conversation"""
+        """
+        PRE : private_conversation is a PrivateConversation object 
+        """
         for message in private_conversation.messages:
             if message["sender"] == Main.current_user:
                 msg = MessageSent(
@@ -136,6 +159,11 @@ class ConversationContainer(ScrollView):
                 self.messages_box.add_widget(msg, len(self.messages_box.children))
 
     def add_message(self, msg_obj, pos="left"):
+        """add a new message to the conversation"""
+        """
+        PRE : msg_obj is a Message object, pos is a string
+        POST : a new message is added
+        """
         msg = MessageSent()  # ici
         msg.text = str(msg_obj.timestamp) + " - " + msg_obj.sender + "\n" + msg_obj.msg
         self.messages_box.add_widget(msg, len(self.messages_box.children))
@@ -169,6 +197,7 @@ class Conversation(RelativeLayout):
         self.add_widget(self.inputs_container)
 
     def send_message(self):
+        """send the message passed in input"""
         txt = self.inputs_container.ids.message_input.text
         timestamp = datetime.now()
         if self.private_conversation is not None:
