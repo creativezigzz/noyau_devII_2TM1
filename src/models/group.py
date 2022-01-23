@@ -11,6 +11,10 @@ import uuid
 
 class Group:
     def __init__(self, name):
+        """init a new group"""
+        """
+        PRE : name is a str
+        """
         self.gid = uuid.uuid4()
         self.name = name
 
